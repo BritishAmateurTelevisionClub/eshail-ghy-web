@@ -1213,6 +1213,8 @@ function bodyonload()
    {
     document.getElementById('autoplay-start').style.display = "inline";
    }
+
+   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?nick=websdr_...&channels=%23es%27hail-2&uio=d4';
 }
 
 function chrome_start_audio()
