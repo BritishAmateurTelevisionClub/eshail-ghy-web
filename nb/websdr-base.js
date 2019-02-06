@@ -844,14 +844,14 @@ function douu()
    s='';
    total=0;
    for (b=0;b<nbands;b++) {
-     s+="<p><div align='left' style='width:1024px;height:15px;position:relative; background-color:black;'>";
+     s+="<div align='left' style='width:1024px;height:15px;position:relative; background-color:black;'>";
      for (i=0;i<uu_names.length;i++) if (uu_bands[i]==b && uu_names[i]!="") {
         s+="<div id='user"+i+"' style='position:absolute;top:1px;left:"+
              (uu_freqs[i]*1024)
              +"px;width:1px;height:13px; background-color:"+others_colours[i%8]+";'></div>";
         total++;
      }
-     s+="</div><div><img src="+bi[b].scaleimgs[0][0]+"></div></p>";
+     s+="</div><div><img src="+bi[b].scaleimgs[0][0]+"></div>";
    }
    usersobj.innerHTML=s;
    numusersobj.innerHTML=total;
