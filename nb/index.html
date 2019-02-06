@@ -32,6 +32,7 @@ body { color: black; background-color: #C0C0C0; }
   input:not(:checked) + .keylist { display: none; }
   input:checked + .keylist { display: block; }
   .warning { color:red; font-weight:bold; border:2px; border-style:solid; border-color:black; background-color:white; margin:8px; padding:4px; display:none;  }
+  #autoplay-start { display: none; font-weight: bold; color: red; }
 </style>
 </head>
 
@@ -85,13 +86,20 @@ Your browser does not seem to support HTML5 WebAudio; please try a recent versio
 </div>
 </form>
 
-<form name="html5choiceform" action="#" style="float:right">
+<form name="html5choiceform" action="#">
 <div class="ctl">
 <div id=html5choice>
 </div>
 </div>
-<br style="clear:both">
 </form>
+
+<form name="soundform" action="#">
+<div class="ctl" id="autoplay-start">
+  <input type="button" value="Click to start audio!" onclick="chrome_start_audio();">
+</div>
+</form>
+
+<br style="clear:both">
 
 <div style="position:relative" class=clear>
 <div id="test">

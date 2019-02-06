@@ -1225,6 +1225,17 @@ function bodyonload()
       registerTouchEvents("edgeupper", touchupper, touchXYupperedge);
       registerTouchEvents("edgelower", touchlower, touchXYloweredge);
    }
+
+   if(document['ct'].state == 'suspended')
+   {
+    document.getElementById('autoplay-start').style.display = "inline";
+   }
+}
+
+function chrome_start_audio()
+{
+  document['ct'].resume();
+  document.getElementById('autoplay-start').style.display = "none";
 }
 
 function registerTouchEvents(id, touchStart, touchMove) {
