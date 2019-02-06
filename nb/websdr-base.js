@@ -1094,18 +1094,47 @@ function html5orjavamenu()
    } catch (e) {};
    if (sup_iOS) isTouchDev=true;
 
-   s='<b>Waterfall:</b>&nbsp;';
-   if (sup_socket && sup_canvas) s+='<span style="color:green; font-weight: bold;">'; else s+='<span style="color:red; font-weight: bold;">';
-   s+='HTML5</span>';
-   s+='&nbsp;&nbsp;&nbsp;<b>Sound:</b>&nbsp;';
-   if (sup_socket && sup_webaudio) s+='<span style="color: green; font-weight: bold;">';
-   else if (sup_socket && sup_mozaudio) s+='<span style="color: blue; font-weight: bold;">';
-   else s+='<span style="color: red; font-weight: bold;">';
-   s+='HTML5</span>';
-   if (sup_iOS && sup_socket && sup_webaudio) s+='<input type="button" value="iOS audio start" onclick="iOS_audio_start()">';
-   document.getElementById('html5choice').innerHTML = s;
-   document.getElementById('record_span').style.display = "inline";
+   if (sup_socket && sup_canvas)
+   {
+    document.getElementById('html5-waterfall-status').classList.add('html5-status-ok');
+   }
+   else
+   {
+    document.getElementById('html5-waterfall-status').classList.add('html5-status-error');
+   }
+
+   if ((sup_socket && sup_webaudio) || (sup_socket && sup_mozaudio))
+   {
+    if(document['ct'].state != 'suspended')
+     {
+      document.getElementById('html5-sound-status').classList.add('html5-status-ok');
+     }
+     else
+     {
+      document.getElementById('html5-sound-status').classList.add('html5-status-warning');
+      document.getElementById('autoplay-start').style.display = 'inline';
+
+     }
+   }
+   else
+   {
+    document.getElementById('html5-sound-status').classList.add('html5-status-error');
+   }
+
+   if (sup_iOS && sup_socket && sup_webaudio)
+   {
+    document.getElementById('ios-start').style.display= 'inline';
+   }
+
    document.getElementById("html5warning").style.display= (!sup_webaudio && !sup_mozaudio) ? "block" : "none";
+}
+
+function chrome_start_audio()
+{
+  document['ct'].resume();
+  document.getElementById('autoplay-start').style.display = "none";
+  document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
+  document.getElementById('html5-sound-status').classList.add('html5-status-ok');
 }
 
 
@@ -1209,18 +1238,7 @@ function bodyonload()
       registerTouchEvents("edgelower", touchlower, touchXYloweredge);
    }
 
-   if(document['ct'].state == 'suspended')
-   {
-    document.getElementById('autoplay-start').style.display = "inline";
-   }
-
    document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?nick=websdr_...&channels=%23es%27hail-2&uio=d4';
-}
-
-function chrome_start_audio()
-{
-  document['ct'].resume();
-  document.getElementById('autoplay-start').style.display = "none";
 }
 
 function registerTouchEvents(id, touchStart, touchMove) {
