@@ -832,41 +832,23 @@ function uu(i, username, band, freq)
    uu_freqs[i]=freq;
 }
 
-var uu_compactview=false;
 function douu()
 // draw the diagram that shows the other listeners
 {
    s='';
    total=0;
    for (b=0;b<nbands;b++) {
-      if (!uu_compactview) {
-         s+="<p><div align='left' style='width:1024px; background-color:black;'><div class=others>";
-         for (i=0;i<uu_names.length;i++) if (uu_bands[i]==b && uu_names[i]!="") {
-            s+="<div id='user"+i+"' align='center' style='position:relative;left:"+
-                 (uu_freqs[i]*1024-250)
-                 +"px;width:500px; color:"+others_colours[i%8]+";'><b>"+uu_names[i]+"</b></div>";
-            total++;
-         }
-         s+="<img src="+bi[b].scaleimgs[0][0]+"></div></div></p>";
-      } else {
-         s+="<p><div align='left' style='width:1024px;height:15px;position:relative; background-color:black;'>";
-         for (i=0;i<uu_names.length;i++) if (uu_bands[i]==b && uu_names[i]!="") {
-            s+="<div id='user"+i+"' style='position:absolute;top:1px;left:"+
-                 (uu_freqs[i]*1024)
-                 +"px;width:1px;height:13px; background-color:"+others_colours[i%8]+";'></div>";
-            total++;
-         }
-         s+="</div><div><img src="+bi[b].scaleimgs[0][0]+"></div></p>";
-      }
+     s+="<p><div align='left' style='width:1024px;height:15px;position:relative; background-color:black;'>";
+     for (i=0;i<uu_names.length;i++) if (uu_bands[i]==b && uu_names[i]!="") {
+        s+="<div id='user"+i+"' style='position:absolute;top:1px;left:"+
+             (uu_freqs[i]*1024)
+             +"px;width:1px;height:13px; background-color:"+others_colours[i%8]+";'></div>";
+        total++;
+     }
+     s+="</div><div><img src="+bi[b].scaleimgs[0][0]+"></div></p>";
    }
    usersobj.innerHTML=s;
    numusersobj.innerHTML=total;
-}
-
-function setcompactview(c)
-{
-   uu_compactview=c;
-   douu();
 }
 
 
@@ -1140,11 +1122,6 @@ function bodyonload()
    if (nvbands>=2) document.viewform.group[view].checked=true;
    else document.viewform.group[view-2].checked=true;
 
-   var x= readCookie('username');
-   var p=document.getElementById("please2");
-   if (!x && p) p.innerHTML="<b><i>Please type a name or callsign in the box at the <a href='#please'>top of the page</a> to identify your chat messages!</i></b>";
-
-   uu_compactview=document.getElementById("compactviewcheckbox").checked;
    document.getElementById("mutecheckbox").checked=false;
    document.getElementById("squelchcheckbox").checked=false;
    document.getElementById("autonotchcheckbox").checked=false;
