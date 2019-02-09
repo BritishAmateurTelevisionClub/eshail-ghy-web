@@ -9,8 +9,8 @@
     <link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
       body {
-        margin-left: 5px;
-        margin-right: 5px;
+        margin-left: 25px;
+        margin-right: 25px;
       }
       #logo-row {
         margin-top: 10px;
@@ -64,6 +64,13 @@
         color: #999999;
       }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-76514704-7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-76514704-7');
+    </script>
   </head>
   <body class="bg-light">
     <div id="logo-row" class="row">
@@ -109,12 +116,12 @@
     <div id="content" role="main">
       <div class="row">
 
-        <div id="fft-col" class="col-md-7">
+        <div id="fft-col" class="col-xl-7">
           <canvas id="c" width="1" height="1" style="background-color: black;"></canvas>
           <div id="stats"></div>
         </div>
 
-        <div id="chat-col" class="col-md-5">
+        <div id="chat-col" class="col-xl-5">
           <div id="chat"></div>
         </div>
 

@@ -9,8 +9,8 @@
     <link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
       body {
-        margin-left: 5px;
-        margin-right: 5px;
+        margin-left: 25px;
+        margin-right: 25px;
       }
       #logo-row {
         margin-top: 10px;
@@ -102,6 +102,13 @@
         font-weight: bold;
       }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-76514704-7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-76514704-7');
+    </script>
   </head>
 
   <script src="/lib/jquery-3.3.1.min.js"></script>
@@ -193,8 +200,7 @@
         <b>Waterfall:</b>&nbsp;<span id="html5-waterfall-status">HTML5</span>
         &nbsp;&nbsp;
         <b>Sound:</b>&nbsp;<span id="html5-sound-status">HTML5</span>
-        <input class="sound-start" id="autoplay-start" type="button" value="Click to start sound!" onclick="chrome_start_audio();">
-        <input class="sound-start" id="ios-start" type="button" value="iOS audio start" onclick="iOS_audio_start()">
+        <input class="sound-start" id="autoplay-start" type="button" value="Click to start sound!" onclick="start_audio();">
       </div>
     </form>
 
@@ -405,4 +411,5 @@
       <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
     </footer>
   </body>
+  <script src="websdr-sound.js" type="text/javascript"></script>
 </html>

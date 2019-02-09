@@ -1043,31 +1043,6 @@ var sup_webaudio = window.AudioContext || window.webkitAudioContext;
 var sup_mozaudio = false;
 try { if (typeof(Audio)==='function' && typeof(new Audio().mozSetup)=='function') sup_mozaudio = true; } catch (e) {};
 
-
-function html5orjava(item,usejava)
-{
-   if (item==0) {
-      // waterfall
-      try { for (i=0;i<nwaterfalls;i++) waterfallapplet[i].destroy(); } catch (e) {} ;
-      document_waterfalls();
-   }
-   if (item==1) {
-      // sound
-      try { soundapplet.destroy(); } catch (e) {};
-      document_soundapplet();
-      document.getElementById('record_span').style.display= "inline";
-   }
-}
-
-function iOS_audio_start()
-{
-   // Safari on iOS only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
-   if (!document.ct) document.ct= new webkitAudioContext();
-   var s = document.ct.createBufferSource();
-   s.connect(document.ct.destination);
-   try { s.start(0); } catch(e) { s.noteOn(0); }
-}
-
 function html5orjavamenu()
 {
    var s;
@@ -1121,22 +1096,39 @@ function html5orjavamenu()
     document.getElementById('html5-sound-status').classList.add('html5-status-error');
    }
 
-   if (sup_iOS && sup_socket && sup_webaudio)
-   {
-    document.getElementById('ios-start').style.display= 'inline';
-   }
-
    document.getElementById("html5warning").style.display= (!sup_webaudio && !sup_mozaudio) ? "block" : "none";
 }
 
-function chrome_start_audio()
+function start_audio()
 {
-  document['ct'].resume();
-  document.getElementById('autoplay-start').style.display = "none";
-  document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
-  document.getElementById('html5-sound-status').classList.add('html5-status-ok');
-}
+  if(sup_iOS)
+  {
+    // Safari on iOS only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
+    if (!document.ct) document.ct = new webkitAudioContext();
+    var s = document.ct.createBufferSource();
+    s.connect(document.ct.destination);
+    try { s.start(0); } catch(e) { s.noteOn(0); };
+  }
+  else
+  {
+    document['ct'].resume();
+  }
 
+  setTimeout(function() {
+    if(document['ct'].state != 'suspended')
+    {
+      document.getElementById('autoplay-start').style.display = "none";
+      document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
+      document.getElementById('html5-sound-status').classList.add('html5-status-ok');
+    }
+    else
+    {
+      document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
+      document.getElementById('html5-sound-status').classList.add('html5-status-error');
+      alert(document['ct'].state);
+    }
+  }, 50);
+}
 
 function bodyonload()
 {
@@ -1224,8 +1216,6 @@ function bodyonload()
       setfreqif(ini_freq);
       set_mode(ini_mode);
    }
-
-   document_soundapplet();
 
    interval_ajax3 = setTimeout('ajaxFunction3()',1000);
 
@@ -1621,19 +1611,6 @@ function document_bandbuttons() {
        for (i=0;i<nbands;i++) document.write ("<input type=\"radio\" name=\"group0\" value=\""+bandinfo[i].name+"\" onclick=\"setband("+i+")\">"+bandinfo[i].name+"\n");
     }
 }
-
-
-function document_soundapplet() {
-     if (typeof prep_html5sound =="function") prep_html5sound();
-     else {
-       script = document.createElement('script');
-       script.src = 'websdr-sound.js';
-       script.type = 'text/javascript';
-       document.body.appendChild(script);
-     }
-}
-
-
 
 //----------------------------------------------------------------------------------------
 // recording
