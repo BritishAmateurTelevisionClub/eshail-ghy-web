@@ -3,41 +3,44 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Es'hail-2 WB Spectrum</title>
-    <meta name="description" content="Es'hail-2 Wideband Spectrum Monitor">
-    <meta name="author" content="British Amateur Television Club">
+    <title>QO-100 Wideband Spectrum Monitor</title>
+    <meta name="description" content="BATC & AMSAT-UK Qatar OSCAR-100 (Es'hail-2) Wideband Spectrum Monitor">
+    <meta name="author" content="BATC & AMSAT-UK">
     <link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
       body {
-        font-family: "Open Sans", Arial, sans-serif;
         margin-left: 5px;
         margin-right: 5px;
       }
-      .navbar {
-        background-color: #FFFFFF;
-        border-bottom-width: 0px;
-        height: 110px;
+      #logo-row {
+        margin-top: 10px;
+        height: 75px;
       }
-      #navbar-brand {
-        float: left;
-        position: absolute;
-      }
-      #header-batc-logo {
-        height: 80px;
-        width: auto;
-      }
-      .header-batc-name {
-        position: relative;
-        left: 20px;
-        font-size: 4em;
-        font-family: 'Ubuntu';
+      #logo-row > div {
+        height: 100%;
+        padding-left: 0px;
+        padding-right: 0px;
         vertical-align: middle;
-        color: black;
-        padding-left: 10px;
       }
-      .header-batc-name.hidden-lg {
+      .logo {
+        max-height: 100%;
+        max-width: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        top-margin: 0;
         position: absolute;
-        left: 280px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      #page-title {
+        margin-top: 5px;
+        padding-left: 0.5rem;
+      }
+      #top-description {
+        line-height: 1.0;
+        padding-left: 1rem;
       }
       #stats {
         text-align: left;
@@ -62,17 +65,46 @@
       }
     </style>
   </head>
-  <body>
-
-    <nav class="navbar navbar-inverse navbar-static-top">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/">
-          <img id="header-batc-logo" src="/img/batc-logo-500px.png" alt="BATC">
+  <body class="bg-light">
+    <div id="logo-row" class="row">
+      <div class="col-2">
+        <a href="https://batc.org.uk/" target="_blank">
+          <img class="logo" src="/img/batc-logo-150px.png" alt="British Amateur Television Club">
         </a>
-        <div class="header-batc-name d-lg-none">Es'hail-2</div>          
-        <div class="header-batc-name d-lg-inline">Es'hail-2 WB Spectrum Monitor</div>
       </div>
-    </nav>
+      <div class="col-2">
+        <a href="https://amsat-uk.org/" target="_blank">
+          <img class="logo" src="/img/amsatuk-logo-150px.png" alt="Amateur Satellites - United Kingdom">
+        </a>
+      </div>
+      <div class="col-2">
+        <a href="https://amsat-dl.org/" target="_blank">
+          <img class="logo" src="/img/amsatdl-logo-150px.png" alt="Amateur Satellites - Deutschland">
+        </a>
+      </div>
+      <div class="col-2">
+        <a href="https://www.qsl.net/a71a/" target="_blank">
+          <img class="logo" src="/img/qars-logo-150px.png" alt="Qatar Amateur Radio Society">
+        </a>
+      </div>
+      <div class="col-2">
+        <a href="https://www.goonhilly.org/" target="_blank">
+          <img class="logo" src="/img/goonhilly-logo.png" alt="Goonhilly Earth Station">
+        </a>
+      </div>
+    </div>
+    <h1 id="page-title">Qatar OSCAR-100 Wideband Spectrum Monitor</h1>
+    <div id="top-description">
+      <p>
+        This wideband spectrum monitor, hosted at Goonhilly Earth Station in Cornwall, shows the spectrum of the Qatar OSCAR-100 wideband transponder onboard the Es'hail-2 satellite.
+      </p>
+      <p>
+        For more details on Qatar OSCAR-100 see <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">https://amsat-dl.org/eshail-2-amsat-phase-4-a</a>
+      </p>
+      <p>
+        The QO-100 narrowband websdr can be found here <a href="https://eshail.batc.org.uk/nb/" target="_blank">https://eshail.batc.org.uk/nb/</a>
+      </p>
+    </div>
 
     <div id="content" role="main">
       <div class="row">
@@ -89,6 +121,9 @@
       </div>
     </div>
 
+    <footer class="my-4 pt-1 text-muted text-center text-small">
+      <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
+    </footer>
   </body>
   <script src="/lib/jquery-3.3.1.min.js"></script>
   <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
