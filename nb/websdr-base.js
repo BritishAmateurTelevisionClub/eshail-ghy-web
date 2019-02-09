@@ -1143,7 +1143,7 @@ function bodyonload()
    var s;
 
    html5orjavamenu();
-   if ((sup_iOS || sup_android) && has_mobile) document.getElementById("mobilewarning").style.display= "block";
+   if (sup_iOS || sup_android) document.getElementById("mobilewarning").style.display= "block";
 
    view= readCookie('view');
    if (view==null) view=Views.oneband;
