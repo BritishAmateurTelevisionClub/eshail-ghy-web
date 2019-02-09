@@ -1,132 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Es'hailSat Spectrum</title>
-<meta name="description" content="Es'hail-2 Spectrum Monitor">
-<meta name="author" content="British Amateur Television Club">
-<link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
-<style>
-.navbar {
-  background-color: #FFFFFF;
-  border-bottom-width: 0px;
-  height: 145px;
-  background-image: url("/img/blue_header_background.jpg");
-  background-repeat: repeat-x;
-}
-.navbar-header {
-  height: 130px;
-  line-height: 130px;
-}
-#navbar-brand {
-  float: left;
-  position: absolute;
-}
-#header-batc-logo {
-  height: 115px;
-  width: auto;
-}
-.header-batc-name {
-    position: relative;
-    left: 20px;
-    font-size: 4em;
-    font-family: 'Ubuntu';
-    vertical-align: middle;
-    color: #FFFFFF;
-    padding-left: 10px;
-}
-.header-batc-name.hidden-lg {
-    position: absolute;
-    left: 280px;
-}
-#stats {
-    text-align: left;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    color: #010101;
-    font-family: "Open Sans", Arial, sans-serif;
-    font-weight: bold;
-    margin-bottom: 10px;
-    padding-left: 3px;
-    padding-right: 3px;
-}
-#chat {
-  height: 480px;
-}
-#footer {
-  padding-top: 20px;
-  text-align: center;
-  margin-bottom: 5px;
-  clear: both;
-  color: #999999;
-}
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Es'hail-2 WB Spectrum</title>
+    <meta name="description" content="Es'hail-2 Wideband Spectrum Monitor">
+    <meta name="author" content="British Amateur Television Club">
+    <link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        font-family: "Open Sans", Arial, sans-serif;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+      .navbar {
+        background-color: #FFFFFF;
+        border-bottom-width: 0px;
+        height: 110px;
+      }
+      #navbar-brand {
+        float: left;
+        position: absolute;
+      }
+      #header-batc-logo {
+        height: 80px;
+        width: auto;
+      }
+      .header-batc-name {
+        position: relative;
+        left: 20px;
+        font-size: 4em;
+        font-family: 'Ubuntu';
+        vertical-align: middle;
+        color: black;
+        padding-left: 10px;
+      }
+      .header-batc-name.hidden-lg {
+        position: absolute;
+        left: 280px;
+      }
+      #stats {
+        text-align: left;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        color: #010101;
+        font-weight: bold;
+        margin-bottom: 10px;
+        padding-left: 3px;
+        padding-right: 3px;
+      }
+      #chat {
+        height: 480px;
+      }
+      #footer {
+        padding-top: 20px;
+        text-align: center;
+        margin-bottom: 5px;
+        clear: both;
+        color: #999999;
+      }
+    </style>
+  </head>
+  <body>
 
-<nav class="navbar navbar-inverse navbar-static-top">
-  <div class="container">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/"><img id="header-batc-logo" src="/img/batc-logo-500px.png" alt="BATC"></a>
-<div class="header-batc-name hidden-lg">Es'hailSat</div>          
-<div class="header-batc-name visible-lg-inline">Es'hailSat Spectrum Monitor</div>
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">
+          <img id="header-batc-logo" src="/img/batc-logo-500px.png" alt="BATC">
+        </a>
+        <div class="header-batc-name d-lg-none">Es'hail-2</div>          
+        <div class="header-batc-name d-lg-inline">Es'hail-2 WB Spectrum Monitor</div>
+      </div>
+    </nav>
+
+    <div id="content" role="main">
+      <div class="row">
+
+        <div id="fft-col" class="col-md-7">
+          <canvas id="c" width="1" height="1" style="background-color: black;"></canvas>
+          <div id="stats"></div>
+        </div>
+
+        <div id="chat-col" class="col-md-5">
+          <div id="chat"></div>
+        </div>
+
+      </div>
     </div>
-  </div>
-</nav>
 
-<div id="content" role="main">
-	<div class="row">
-<div id="fft-col" class="col-md-7">
-    <canvas id="c" width="1" height="1" style="background-color: black;"></canvas>
-    <div id="stats"></div>
-  </div>
-  <div id="chat-col" class="col-md-5">
-    <div id="chat"></div>
-  </div>
-</div>
-</div>
+  </body>
+  <script src="/lib/jquery-3.3.1.min.js"></script>
+  <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
+  <script src="/lib/socket.io-2.2.0.min.js"></script>
+  <script src="chat.js"></script>
+  <script>
+    var ws_url = "wss://"+window.location.hostname+"/wb/fft";
+    var ws_sock = null;
+    var ws_reconnect = null;
 
-<div id="footer">
-<span>Copyright © Phil Crump M0DNY</span>
-</div>
+    var ctx;
+    var canvasWidth;
+    var canvasHeight;
 
-</body>
-<script src="/lib/jquery-3.3.1.min.js"></script>
-<script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
-<script src="/lib/socket.io-2.2.0.min.js"></script>
-<script src="chat.js"></script>
-<script>
-var ws_url = "wss://"+window.location.hostname+"/wb/fft";
-var ws_sock = null;
-var ws_reconnect = null;
+    /* On load */
+    $(function() {
+      canvasHeight = 450;
+      canvasWidth = $("#fft-col").width();
 
-var ctx;
-var canvasWidth;
-var canvasHeight;
+      var el = document.getElementById('c');
+      $("#c").attr( "width", canvasWidth );
+      $("#c").attr( "height", canvasHeight );
 
-/* On load */
-$(function() {
-    canvasHeight = 450;
-    canvasWidth = $("#fft-col").width();
+      ctx = el.getContext('2d');
 
-    var el = document.getElementById('c');
-    $("#c").attr( "width", canvasWidth );
-    $("#c").attr( "height", canvasHeight );
+      devicePixelRatio = window.devicePixelRatio || 1,
+      backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
+                          ctx.mozBackingStorePixelRatio ||
+                          ctx.msBackingStorePixelRatio ||
+                          ctx.oBackingStorePixelRatio ||
+                          ctx.backingStorePixelRatio || 1,
+      ratio = devicePixelRatio / backingStoreRatio;
 
-    ctx = el.getContext('2d');
-
-    devicePixelRatio = window.devicePixelRatio || 1,
-    backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
-                        ctx.mozBackingStorePixelRatio ||
-                        ctx.msBackingStorePixelRatio ||
-                        ctx.oBackingStorePixelRatio ||
-                        ctx.backingStorePixelRatio || 1,
-    ratio = devicePixelRatio / backingStoreRatio;
-
-    if (devicePixelRatio !== backingStoreRatio) {
-
+      if (devicePixelRatio !== backingStoreRatio)
+      {
         var oldWidth = el.width;
         var oldHeight = el.height;
 
@@ -137,63 +134,63 @@ $(function() {
         el.style.height = oldHeight + 'px';
 
         ctx.scale(ratio, ratio);
-    }
-    
-    /* Connect to websocket feed */
-    ws_connect();
-   
-	var chat = new BATC_Chat({
-                element: $("#chat"),
-                room: 'eshail-wb',
-                nick: '',
-                viewers_cb: update_stats,
-                guests_allowed: true
-            });
-});
+      }
+      
+      /* Connect to websocket feed */
+      ws_connect();
+     
+      var chat = new BATC_Chat({
+        element: $("#chat"),
+        room: 'eshail-wb',
+        nick: '',
+        viewers_cb: update_stats,
+        guests_allowed: true
+      });
+    });
 
-function normaliseSample(data)
-{
-    return (data*1.3);
-}
-
-function updateFFT(data)
-{
-    var i;
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    /* Draw Vertical Lines */
-    ctx.save();
-    ctx.setLineDash([5, 20]);
-    for(i=0;i<8;i++)
+    function normaliseSample(data)
     {
+      return (data-300)*1.95;
+    }
+
+    function updateFFT(data)
+    {
+      var i;
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      /* Draw Vertical Lines */
+      ctx.save();
+      ctx.setLineDash([5, 20]);
+      for(i=0;i<8;i++)
+      {
         ctx.beginPath();
         if((i%2))
         {
-            ctx.moveTo(i*(canvasWidth/8),25);
+          ctx.moveTo(i*(canvasWidth/8),25);
         }
         else
         {
-            ctx.moveTo(i*(canvasWidth/8),0);
+          ctx.moveTo(i*(canvasWidth/8),0);
         }
         ctx.lineTo(i*(canvasWidth/8),canvasHeight);
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'grey';
         ctx.stroke();
         /* Draw Vertical Text */
-        if((i%2))
+        if(i%2)
         {
-            ctx.font = "15px Arial";
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.fillText("10.4"+(91+i)+"MHz",i*(canvasWidth/8),17);
+          ctx.font = "15px Arial";
+          ctx.fillStyle = "white";
+          ctx.textAlign = "center";
+          ctx.fillText("10.4"+(91+i)+"MHz",i*(canvasWidth/8),17);
         }
-    }
-    ctx.restore();
-    /* Draw Horizontal Lines */
-    ctx.save();
-    ctx.setLineDash([5, 10]);
-    for(i=1;i<=4;i++)
-    {
-	linePos = i*(canvasHeight/4)-(canvasHeight/8);
+      }
+      ctx.restore();
+      /* Draw Horizontal Lines */
+      ctx.save();
+      ctx.setLineDash([5, 10]);
+      for(i=1;i<=4;i++)
+      {
+        linePos = i*(canvasHeight/4)-(canvasHeight/8);
         ctx.beginPath();
         ctx.moveTo(0+35, linePos);
         ctx.lineTo(canvasWidth-35, linePos);
@@ -205,80 +202,81 @@ function updateFFT(data)
         ctx.textAlign = "center";
         ctx.fillText((10*(4-i))+"dB",17,linePos+4);
         ctx.fillText((10*(4-i))+"dB",canvasWidth-17,linePos+4);
-    }
-    ctx.restore();
-    /* Draw FFT */
-    var data_length = data.length;
-    ctx.lineWidth=(canvasWidth/data_length);
-    ctx.strokeStyle = 'green';
-    for(i=0;i<data_length;i++)
-    {
+      }
+      ctx.restore();
+      /* Draw FFT */
+      var data_length = data.length;
+      ctx.lineWidth=(canvasWidth/data_length);
+      ctx.strokeStyle = 'green';
+      for(i=0;i<data_length;i++)
+      {
         ctx.beginPath();
         ctx.moveTo((i/data_length)*canvasWidth, canvasHeight);
         ctx.lineTo((i/data_length)*canvasWidth, ((normaliseSample(data[i])*canvasHeight)/1000));
         ctx.stroke();
+      }
     }
-}
 
-function ws_connect()
-{
-    if("WebSocket" in window)
+    function ws_connect()
     {
+      if("WebSocket" in window)
+      {
         if(ws_sock != null)
         {
-            return;
+          return;
         }
-    
-	    if (typeof MozWebSocket != "undefined")
-	    {
-		    ws_sock = new MozWebSocket(ws_url, "fft");
-	    }
-	    else
-	    {
-		    ws_sock = new WebSocket(ws_url, "fft");
-	    }
+      
+        if (typeof MozWebSocket != "undefined")
+        {
+          ws_sock = new MozWebSocket(ws_url, "fft");
+        }
+        else
+        {
+          ws_sock = new WebSocket(ws_url, "fft");
+        }
 
-	    try
-	    {
-		    ws_sock.onopen = function()
-		    {
-		        window.clearInterval(ws_reconnect);
-		        ws_reconnect = null;
-		        console.log("Websocket Connection Opened");
-		    } 
+        try
+        {
+          ws_sock.onopen = function()
+          {
+            window.clearInterval(ws_reconnect);
+            ws_reconnect = null;
+            console.log("Websocket Connection Opened");
+          } 
 
-		    ws_sock.onmessage = function got_packet(msg)
-		    {
-		        console.log("Websocket Data: "+msg.data);
-		        updateFFT(JSON.parse(msg.data).fft);
-		    } 
+          ws_sock.onmessage = function got_packet(msg)
+          {
+            console.log("Websocket Data: "+msg.data);
+            updateFFT(JSON.parse(msg.data).fft);
+          } 
 
-		    ws_sock.onclose = function()
-		    {
-		        ws_sock.close();
-		        ws_sock = null;
-		        
-		        if(!ws_reconnect)
-		        {
-			        ws_reconnect = setInterval(function()
-			        {
-			            ws_connect();
-			        },500);
-			    }
-		    }
-	    }
-	    catch(exception)
-	    {
-		    console.log("Websocket Error" + exception);  
-	    }
-	}
-    else
-    {
+          ws_sock.onclose = function()
+          {
+            ws_sock.close();
+            ws_sock = null;
+            
+            if(!ws_reconnect)
+            {
+              ws_reconnect = setInterval(function()
+              {
+                ws_connect();
+              },500);
+            }
+          }
+        }
+        catch(exception)
+        {
+          console.log("Websocket Error" + exception);  
+        }
+      }
+      else
+      {
         alert("Websockets not supported in your browser!");
+      }
     }
-}
 
-function update_stats(num) {
-  $("#stats").text("Users currently monitoring the spectrum: "+num);
-}
-</script>
+    function update_stats(num) {
+      $("#stats").text("Users currently monitoring the spectrum: "+num);
+    }
+  </script>
+</html>
