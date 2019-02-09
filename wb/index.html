@@ -289,7 +289,7 @@
 
           ws_sock.onmessage = function got_packet(msg)
           {
-            console.log("Websocket Data: "+msg.data);
+            //console.log("Websocket Data: "+msg.data);
             updateFFT(JSON.parse(msg.data).fft);
           } 
 
