@@ -35,16 +35,17 @@
         transform: translate(-50%, -50%);
       }
       #page-title {
-        margin-top: 5px;
+        margin-top: 15px;
+        margin-bottom: 15px;
         padding-left: 0.5rem;
       }
       #top-description {
         line-height: 1.0;
-        padding-left: 1rem;
+        padding-left: 0.5rem;
       }
       .hr-reducedmargin {
         margin-top: 0.66rem;
-        margin-bottom: 0.66rem;
+        margin-bottom: 0.33rem;
       }
       .ctl { background: white; float: left; width: auto; margin:5px; border:2px; padding:5px; border-color: black;}
       .clear { clear: both}
@@ -72,6 +73,11 @@
       .statinfoll { background-color:#80ffc0; }
       input:not(:checked) + .keylist { display: none; }
       input:checked + .keylist { display: block; }
+      #mobilewarning {
+        min-height:45px;
+        text-align:center;
+        vertical-align:middle;
+      }
       .warning { color:red; font-weight:bold; border:2px; border-style:solid; border-color:black; background-color:white; margin:8px; padding:4px; display:none;  }
       .sound-start {
         margin-left: 10px;
@@ -82,6 +88,7 @@
         width: 1024px;
         /* margin-left: 50%; */
         /* transform: translateX(-50%); */
+        padding-left: 0.5rem;
       }
       #users {
         height: 33px;
@@ -162,9 +169,9 @@
 
     <div id="dummyforie"></div>
     <a href="m.html">
-    <div id="mobilewarning" class="warning" style="min-height:45px; text-align:center; vertical-align:middle;">
-      It seems you are using a mobile device; click here to switch to the mobile version of this site.
-    </div>
+      <div id="mobilewarning" class="warning">
+        It seems you are using a mobile device; click here to switch to the mobile version of this site.
+      </div>
     </a>
 
     <div id="html5warning" class="warning">
