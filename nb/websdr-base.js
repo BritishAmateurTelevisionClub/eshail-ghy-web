@@ -1125,7 +1125,7 @@ function start_audio()
     {
       document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
       document.getElementById('html5-sound-status').classList.add('html5-status-error');
-      alert(document['ct'].state);
+      alert("Audio playback doesn't appear to be working, please refresh or contact project team if the problem persists.");
     }
   }, 50);
 }
@@ -1228,7 +1228,7 @@ function bodyonload()
       registerTouchEvents("edgelower", touchlower, touchXYloweredge);
    }
 
-   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?nick=websdr_...&channels=%23es%27hail-2&uio=d4';
+   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?nick=qo100-websdr_...&channels=%23es%27hail-2&uio=d4';
 }
 
 function registerTouchEvents(id, touchStart, touchMove) {

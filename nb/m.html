@@ -74,14 +74,31 @@
 
   // ----- initialization stuff: -------------------------------
 
-  function mobile_audio_start()
+  function start_audio()
   {
-     // Mobile only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
-     if (!document.ct) document.ct= new webkitAudioContext();
-     var s = document.ct.createBufferSource();
-     s.connect(document.ct.destination);
-     try { s.start(0); } catch(e) { s.noteOn(0); }
-    document.getElementById('mobile_audio_start_btn').style.display = "none";
+    if(sup_iOS)
+    {
+      // Safari on iOS only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
+      if (!document.ct) document.ct = new webkitAudioContext();
+      var s = document.ct.createBufferSource();
+      s.connect(document.ct.destination);
+      try { s.start(0); } catch(e) { s.noteOn(0); };
+    }
+    else
+    {
+      document['ct'].resume();
+    }
+
+    setTimeout(function() {
+      if(document['ct'].state != 'suspended')
+      {
+        document.getElementById('mobile_audio_start_btn').style.display = "none";
+      }
+      else
+      {
+        alert("Audio playback doesn't appear to be working, please refresh or contact project team if the problem persists.");
+      }
+    }, 50);
   }
 
   var serveravailable=-1;  // -1 means yet to be tested, 0 and 1 mean false and true
@@ -257,7 +274,7 @@
      if (iscw()) f-=(hi+lo)/2;
      if (!(f>0)) f=freq;
      setTimeout("setfreq("+f+");",0);
-     fo.modesel.focus();
+     //fo.modesel.focus();
   }
 
 
@@ -574,12 +591,13 @@
   </script>
 
   <body>
-
-    This is the mobile version of this <a href=".">WebSDR</a>.
-    It should work using Safari on iOS devices, and Firefox on Android devices.
-    Tuning is different from the normal WebSDR: do not drag the yellow filter curve,
-    but the waterfall.
-    <br>
+    <h1>QO-100 Mobile Narrowband WebSDR</h1>
+    <p>
+      This is the mobile version of the <a href=".">QO-100 Narrowband WebSDR</a>.
+    </p>
+    <p>
+      Tuning is different from the normal WebSDR: Drag the waterfall, not the yellow filter curve.
+    </p>
     <hr>
 
     <div id="html5warning" class="warning">
@@ -598,7 +616,7 @@
            if (n.indexOf('ipod')!=-1) sup_iOS=true;
            if (n.indexOf('ios')!=-1) sup_iOS=true;
         } catch (e) {};
-        if (sup_iOS || sup_android) document.write('<div id="mobile_audio_start_btn"><button onclick="mobile_audio_start()">Tap to start audio!</button><br></div>');
+        if (sup_iOS || sup_android) document.write('<div id="mobile_audio_start_btn"><button onclick="start_audio();">Tap to start audio!</button><br></div>');
       </script>
       <input type="number" name="frequency" step="any" onFocus="freqfocus=true; this.value=''" onBlur="freqfocus=false;" class="freqbar" style="display:inline-block; width:60%;" />
       <div class="freqinfo1"><div class="freqinfo2" id="freqinfo"></div></div>
@@ -677,8 +695,8 @@
 
 <script>
   var isTouchDev=true;
-  var freq=bandinfo[0].centerfreq;
-  var mode="AM";
+  var freq=ini_freq;
+  var mode='USB';
   var hi=3.5;
   var lo=-3.5;
   var band=0;
@@ -709,6 +727,7 @@
   wvw0=wvw;
 
   document.getElementById('modesel').value=mode;
+  setmode_sel(document.getElementById('modesel'));
 
   {
      var i;
