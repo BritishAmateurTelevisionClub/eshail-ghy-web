@@ -1,200 +1,85 @@
-
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="BATC Es'hail-2 ATV Spectrum Monitor & NB WebSDR">
-    <meta name="author" content="British Amateur Television Club">
+    <meta name="description" content="BATC & AMSAT-UK's OSCAR-100 (Es'hail-2) Narrowband WebSDR & Wideband Spectrum Monitor">
+    <meta name="author" content="BATC & AMSAT-UK">
     <link rel="icon" href="/favicon.ico">
-    <title>Es'hail-2 WebSDR</title>
+    <title>OSCAR-100 Web Receiver Project</title>
     <link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
-body {
-  margin-top: 20px;
-}
-     #eshail-footprint {
+      body {
+        margin-top: 20px;
+      }
+      #eshail-footprint {
         width: 60%;
         display: block;
         margin-left: auto;
         margin-right: auto;
         vertical-align: middle;
       }
-.text-center {
-	text-align: center;
-}
-  .greyed {
-	  color: grey !important;
-    pointer-events: none;
-  }
+      .text-center {
+        text-align: center;
+      }
+      .greyed {
+        color: grey !important;
+        pointer-events: none;
+      }
     </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-76514704-7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-76514704-7');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-76514704-7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-76514704-7');
+    </script>
   </head>
   <body class="bg-light">
     <div class="container">
       <div class="row">
-	<div class="col-md-7">
-      <h1>Es'hail-2 WebSDR</h1>
-        <p>
-      Es'hail-2 is a Broadcast Transponder Satellite owned by the <a href="https://www.eshailsat.qa/" target="_blank">Es'hailSat Qatar Satellite Company</a> at 25.9° E.
-      </p>
-      <p>
-      The first geostationary amateur radio transponder (P4-A) on Es'hail-2 is a joint project between the Qatar Satellite Company (Es'hailSat), the <a href="http://www.qsl.net/a71a/" target="_blank">Qatar Amateur Radio Society (QARS)</a> and AMSAT Deutschland (AMSAT-DL), which provided the technical lead.
-      </p>
-      <p>
-      More information on the project can be found at <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">AMSAT-DL Phase 4-A</a>
-      </p>
-      <b>Current Orbital Position: <span id="eshail-data-longitude"></span></b> (<i>TLE Epoch: <span id="eshail-data-epoch"></span></i>)
-	</div>
-	<div class="col-md-5">
-		<a href="/img/eshail-footprint.jpg" target="_blank"><img id="eshail-footprint" src="/img/eshail-footprint.jpg" /></a>
-	</div>
+        <div class="col-md-7">
+            <h1>OSCAR-100 Web Receiver</h1>
+            <p>
+            OSCAR-100 is the first geostationary amateur radio transponder, a joint project between the <a href="https://www.eshailsat.qa/" target="_blank">Qatar Satellite Company (Es'hailSat)</a>, the <a href="http://www.qsl.net/a71a/" target="_blank">Qatar Amateur Radio Society (QARS)</a>, and <a href="https://amsat-dl.org/" target="_blank">AMSAT Deutschland (AMSAT-DL)</a> which provided the technical lead.
+            </p>
+            <p>
+            OSCAR-100 is hosted on Es'hail-2, a Broadcast Transponder Satellite owned by the <a href="https://www.eshailsat.qa/" target="_blank">Es'hailSat Qatar Satellite Company</a>, the satellite is now in geostationary orbit at 25.9° E.
+            </p>
+            <p>
+            More information on the OSCAR-100 project can be found at <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">AMSAT-DL Phase 4-A</a>
+            </p>
+        </div>
+        <div class="col-md-5">
+          <a href="/img/eshail-footprint.jpg" target="_blank"><img id="eshail-footprint" src="/img/eshail-footprint.jpg" /></a>
+        </div>
       </div>
       <hr>
       <p>
-	  In co-operation with AMSAT Deutschland, the British Amateur Television Club will be operating a WebSDR for the narrowband segment, and a Spectrum Viewer for the wideband (DATV) segment.
-          </p>
-          <p>
-	  <a href="https://www.goonhilly.org/" target="_blank">Goonhilly Earth Station</a> is supporting the project, providing hosting for the Ground Station facility at their world-famous site in Cornwall, UK.
-	  </p>
-	  <p>
-	  <i>Coming soon..</i>
-	  </p>
+      In co-operation with AMSAT Deutschland, the British Amateur Television Club will be operating a WebSDR for the narrowband segment, and a Spectrum Viewer for the wideband (DATV) segment.
+      </p>
+      <p>
+      <a href="https://www.goonhilly.org/" target="_blank">Goonhilly Earth Station</a> is supporting the project, providing hosting for the Ground Station facility at their world-famous site in Cornwall, UK.
+      </p>
+      <p>
+      <i>Coming soon..</i>
+      </p>
       <div class="row">
-	<a class="col-md-6 greyed" href="#">
+        <a class="col-md-6 greyed" href="#">
           <h3 class="text-center">Narrowband (SSB, FreeDV, etc)</h3>
-	  <img src="/img/websdr_generic.png" width="100%" />
-
-	</a>
-	<a class="col-md-6 greyed" href="#">
+          <img src="/img/websdr_generic.png" width="100%" />
+        </a>
+        <a class="col-md-6 greyed" href="#">
           <h3 class="text-center">Wideband (DATV)</h3>
-	  <img src="/img/spectrum_monitor.png" width="100%" />
-	</a>
+          <img src="/img/spectrum_monitor.png" width="100%" />
+        </a>
       </div>
       <hr>
       <footer class="my-4 pt-1 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2018 BATC & AMSAT-DL</p>
+        <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
       </footer>
     </div>
   </body>
   <script src="/lib/jquery-3.3.1.min.js"></script>
   <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
-  <script src="/lib/orbits-1.2.1.js"></script>
-	<script>
-var eshail;
-var ourLocation = [50.049, -5.183]; // Goonhilly by default
-var ourAltitude = 0; // Meters
-var eshail_update_timer = null;
-loadTLE();
-function updateEshailData()
-{
-    var utc_now = new Date();
-    eshail.setDate(utc_now);
-    eshail.refresh();
-    var eshail_position = eshail.orbit.getPosition();
-    
-    utc_now.setDate(utc_now.getDate() + 1);
-    eshail.setDate(utc_now);
-    eshail.refresh();
-    var eshail_tomorrow_position = eshail.orbit.getPosition();
-    var eshail_degrees_per_day = eshail_tomorrow_position[1] - eshail_position[1];
-    //$("#eshail-data-time").text(pad(utc_now.getUTCHours(),2)+":"+pad(utc_now.getUTCMinutes(),2)+":"+pad(utc_now.getUTCSeconds(),2)+" UTC");
-    console.log(eshail_position);
-    if(eshail_position[1] >= 0 && eshail_position[1] < 180)
-    {
-    $("#eshail-data-longitude").text(
-        (Math.round(eshail_position[1]*100)/100).toFixed(2) + "°E");
-	    if(eshail_degrees_per_day > 0.0)
-	    {
-    //$("#eshail-data-longitude").text(
-    //    (Math.round(eshail_position[1]*100)/100).toFixed(2) + "°E"
-//	+" (+"+(Math.round(eshail_degrees_per_day*100)/100).toFixed(2)+"°E/day)"
-  //  );
-	    }
-	    else
-	    {
-    //$("#eshail-data-longitude").text(
-    //    (Math.round(eshail_position[1]*100)/100).toFixed(2) + "°E"
-//	+" (-"+(Math.round(eshail_degrees_per_day*100)/100).toFixed(2)+"°E/day)"
-  //  );
-	    }
-    }
-    else
-    {
-    //$("#eshail-data-longitude").text(
-    //    (Math.round(eshail_position[1]*100)/100).toFixed(2) + "°W"
-//	+" ("+(Math.round(eshail_degrees_per_day*100)/100).toFixed(2)+"°E/day)"
-  //  );
-    }
-    eshail_update_timer = setTimeout(updateEshailData, 10*1000);
-}
-function loadTLE()
-{
-    $.ajax({
-        url:      "/eshail.txt",
-        type:     'GET',
-        cache:    false
-    }).done(function(data, status, xhr) {
-       var stations = orbits.util.parseTLE(data);
-       for(var i = 0; i < stations.length; i++)
-       {
-           if(stations[i].name == "ES'HAIL 2")
-           {
-       	       var satOpts = {
-       	           tle: stations[i],
-       	           pathLength: 1,
-       	       };
-       	        
-       	       eshail = new orbits.Satellite(satOpts);  
-       	       eshail.refresh();
-   
-       	       //tleDate = convertDateToUTC(new Date(xhr.getResponseHeader("Last-Modified")));
-       	       //$("#iss-data-fileupdated").text(tleDate.toLocaleDateString() + " " + tleDate.toLocaleTimeString() + " UTC");
-   
-       	       epochDate = convertDateToUTC(epochToDate(eshail.tle.epoch_year,eshail.tle.epoch_day));
-       	       $("#eshail-data-epoch").text(epochDate.toLocaleDateString() + " " + epochDate.toLocaleTimeString());
-       	    
-               if(eshail_update_timer == null)
-               {
-                   // Start Update timer
-                   updateEshailData();
-               }
-           }
-       }
-   }).fail(function() {
-       $("#textarea-tle").val("Error loading TLE from server.");
-       console.log("TLE Error.");
-   }).always(function() {
-       // Reload TLE every 60s
-       setTimeout(loadTLE, 60*1000);
-   });
-}
-function pad(num, size) {
-    var s = num+"";
-    while (s.length < size) s = "0" + s;
-    return s;
-}
-function epochToDate(year, fday){
-  var date = new Date(year, 0); // initialize a date in `year-01-01`
-
-  var day = Math.floor(fday);
-  date = new Date(date.setDate(day));
-
-  var hours = Math.floor((fday - day)*24);
-  date = new Date(date.setHours(hours));
-
-  var minutes = Math.floor(((fday-day)-(hours/24))*(24*60));
-  return new Date(date.setMinutes(minutes)); // add the number of days
-}
-function convertDateToUTC(date) {
-  return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-}
-	</script>
 </html>
