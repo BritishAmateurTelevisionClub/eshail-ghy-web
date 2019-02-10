@@ -71,6 +71,9 @@
       .statinfo2l { overflow:hidden; border-width:0px; border-left-width:2px; border-style:solid; border-color:black;position:absolute; }
       .statinfo2l:hover { overflow:visible; }
       .statinfoll { background-color:#80ffc0; }
+      input {
+        margin-left: 3px;
+      }
       input:not(:checked) + .keylist { display: none; }
       input:checked + .keylist { display: block; }
       #mobilewarning {
@@ -88,7 +91,9 @@
         width: 1024px;
         /* margin-left: 50%; */
         /* transform: translateX(-50%); */
-        padding-left: 0.5rem;
+      }
+      #receiver-undercontrols {
+        padding-top: 3px;
       }
       #users {
         height: 33px;
@@ -182,175 +187,141 @@
 
     <div id="receiver-interface">
 
-    <form name="viewform" action="#">
-      <div class="ctl">
-        <b>View:</b>
-        <span id="viewformbuttons"></span>
-      </div>
-      <div class="ctl">
-        <b>Allow keyboard:</b>
-        <input type="checkbox" name="allowkeys" value="">
-        <div class="keylist">
-          <tt><b>j k &larr; &rarr;</b></tt>: freq down/up (+shift/ctrl/alt faster)
-          <br>
-          <tt><b>u l c a f</b></tt>: USB, LSB, CW, AM, FM
-          <br>
-          <tt><b>z Z</b></tt>: center/zoom waterfall 
-          <br>
-          <tt><b>g</b></tt>: enter frequency
+      <form name="viewform" action="#">
+        <div class="ctl">
+          <b>View:</b>
+          <span id="viewformbuttons"></span>
         </div>
-      </div>
-    </form>
-
-    <form name="html5choiceform" action="#">
-      <div class="ctl">
-        <b>Waterfall:</b>&nbsp;<span id="html5-waterfall-status">HTML5</span>
-        &nbsp;&nbsp;
-        <b>Sound:</b>&nbsp;<span id="html5-sound-status">HTML5</span>
-        <input class="sound-start" id="autoplay-start" type="button" value="Click to start sound!" onclick="start_audio();">
-      </div>
-    </form>
-
-    <div class="ctl">
-      <span id=numusers>_</span> user(s) online.
-    </div>
-
-    <br style="clear:both">
-
-    <div style="position:relative" class=clear>
-      <div id="waterfalls"></div>
-      <div class="hideblind">
-        <img src="edgelower.png" title="drag to change filter" id="edgelower" onmousedown="mousedownlower(event)" class="scaleabs" alt="">
-        <img src="edgeupper.png" title="drag to change filter" id="edgeupper" onmousedown="mousedownupper(event)" class="scaleabs" alt="">
-        <div id="yellowbara">
-          <div id="yellowbar" title="drag to tune" class="scaleabs" style="position:absolute;width:100px;height:18px;background-color:transparent" onmousedown="mousedownpassband(event)">
-          <div id="yellowbarr" class="scaleabs" style="position:relative;left:0px;">
-            <div class="scaleabs" style="position:absolute;width:0px;height:0px;"></div>
+        <div class="ctl">
+          <b>Allow keyboard:</b>
+          <input type="checkbox" name="allowkeys" value="">
+          <div class="keylist">
+            <tt><b>j k &larr; &rarr;</b></tt>: freq down/up (+shift/ctrl/alt faster)
+            <br>
+            <tt><b>u l c a f</b></tt>: USB, LSB, CW, AM, FM
+            <br>
+            <tt><b>z Z</b></tt>: center/zoom waterfall 
+            <br>
+            <tt><b>g</b></tt>: enter frequency
           </div>
         </div>
-        <img src="carrier.png" title="drag to tune" id="carrier" onmousedown="mousedownpassband(event)" class="scaleabs" style="z-index:2" alt="">
+      </form>
+
+      <form name="html5choiceform" action="#">
+        <div class="ctl">
+          <b>Waterfall:</b>&nbsp;<span id="html5-waterfall-status">HTML5</span>
+          &nbsp;&nbsp;
+          <b>Sound:</b>&nbsp;<span id="html5-sound-status">HTML5</span>
+          <input class="sound-start" id="autoplay-start" type="button" value="Click to start sound!" onclick="start_audio();">
+        </div>
+      </form>
+
+      <div class="ctl">
+        <span id=numusers>_</span> user(s) online.
+      </div>
+
+      <br style="clear:both">
+
+      <div style="position:relative" class=clear>
+        <div id="waterfalls"></div>
+        <div class="hideblind">
+          <img src="edgelower.png" title="drag to change filter" id="edgelower" onmousedown="mousedownlower(event)" class="scaleabs" alt="">
+          <img src="edgeupper.png" title="drag to change filter" id="edgeupper" onmousedown="mousedownupper(event)" class="scaleabs" alt="">
+          <div id="yellowbara">
+            <div id="yellowbar" title="drag to tune" class="scaleabs" style="position:absolute;width:100px;height:18px;background-color:transparent" onmousedown="mousedownpassband(event)">
+            <div id="yellowbarr" class="scaleabs" style="position:relative;left:0px;">
+              <div class="scaleabs" style="position:absolute;width:0px;height:0px;"></div>
+            </div>
+          </div>
+          <img src="carrier.png" title="drag to tune" id="carrier" onmousedown="mousedownpassband(event)" class="scaleabs" style="z-index:2" alt="">
+          </div>
         </div>
       </div>
+
+      <div id=users></div>
+
     </div>
 
-    <div id=users></div>
+    <div id="receiver-undercontrols">
 
-    <form name="freqform" action="#" onsubmit="setfreqif(this.frequency.value); return false;">
-      <div class="ctl">
-        <b>Frequency:</b>
-        <span class="showblind">
-        <input id="freqstepm3" type="button" value="---" onclick="freqstep(-3)">
-        <input type="button" value="--" onclick="freqstep(-2)">
-        <input type="button" value="-" onclick="freqstep(-1)">
-        </span>
-        <input type="text" size=10 name="frequency" onkeyup="setfreqif_fut(this.value);"> kHz
-        <input type="submit" style="position:absolute; left:-999px" value="submit">  <!-- IE sillyness; other browsers are fine with visibility:none -->
-        <span class="hideblind">
-        <br>
-        <input type="button" value="---" onclick="freqstep(-3)">
-        <input type="button" value="--" onclick="freqstep(-2)">
-        <input type="button" value="-" onclick="freqstep(-1)">
-        </span>
-        <input type="button" value="+" onclick="freqstep(+1)">
-        <input type="button" value="++" onclick="freqstep(+2)">
-        <input type="button" value="+++" onclick="freqstep(+3)">
-        <script type="text/javascript"> document_bandbuttons(); </script>
-        <div class="hideblind">
-        <br>
-        <span style="font-size:65%">Or tune by clicking/dragging/scrollwheel on the frequency scale.</span>
-        <br>
-        <hr>
-        <b>Memories:</b>
-        <div id="memories" class="memories"></div>
+      <div class="hideblind">
+        <div class="ctl">
+          <table>
+            <tr>
+            <td>
+         <b>Frequency:</b>
+        <form name="freqform" action="#" onsubmit="setfreqif(this.frequency.value); return false;">
+
+        <div class="ctl">
+         
+          <span class="showblind">
+          <br>
+           <input id="freqstepm3" type="button" value="---" onclick="freqstep(-3)">
+          <input type="button" value="--" onclick="freqstep(-2)">
+          <input type="button" value="-" onclick="freqstep(-1)">
+          </span>
+          <input type="text" size=10 name="frequency" onkeyup="setfreqif_fut(this.value);"> kHz
+          <input type="submit" style="position:absolute; left:-999px" value="submit">  <!-- IE sillyness; other browsers are fine with visibility:none -->
+          <span class="hideblind">
+          <br>
+          <input type="button" value="---" onclick="freqstep(-3)">
+          <input type="button" value="--" onclick="freqstep(-2)">
+          <input type="button" value="-" onclick="freqstep(-1)">
+          </span>
+          <input type="button" value="+" onclick="freqstep(+1)">
+          <input type="button" value="++" onclick="freqstep(+2)">
+          <input type="button" value="+++" onclick="freqstep(+3)">
+          <script type="text/javascript"> document_bandbuttons(); </script>
+          <div class="hideblind">
+          <br>
+          <span style="font-size:65%">Or tune by clicking / dragging / scrollwheel on the frequency scale</span>
+          <br>
+          <hr>
+          <b>Memories:</b>
+          <div id="memories" class="memories"></div>
+          </div>
         </div>
+        </form>
+          </td> 
+      </tr>
+      </table>
       </div>
-    </form>
+      </div>
 
-    <div class="ctl">
-      <b>Bandwidth: </b>
-      <br>
-      <b><span id="numericalbandwidth6">?</span></b> kHz @ -6dB;
-      <b><span id="numericalbandwidth60">?</span></b> kHz @ -60dB.
-      <br>
-      <table>
-        <tr>
-          <td><input type="button" value="wider"   onclick="lo-=0.03125; hi+=0.03125; updbw();"></td>
-          <td><input type="button" value="CW-wide" onclick="setmf ('cw', -0.95, -0.55);"></td>
+      <div class="ctl">
+        <b>Mode:</b>
+        <table style="margin-top: 5px; margin-bottom: 5px;">
+          <tr>
+          <td><input type="button" value="CW"      onclick="setmf ('cw', 0.55, 0.95);"></td>
           <td><input type="button" value="LSB"     onclick="setmf('lsb', -2.7, -0.3);"></td>
           <td><input type="button" value="USB"     onclick="setmf('usb',  0.3,  2.7);"></td>
           <td><input type="button" value="AM"      onclick="setmf ('am',  -4  ,  4  );"></td>
-          <td><input type="button" value="FM"      onclick="setmf ('fm',  -8  ,  8  );"></td>
-        </tr><tr>
-          <td><input type="button" value="narrower" onclick="lo+=0.03125; hi-=0.03125; updbw();"></td>
-          <td><input type="button" value="CW-narrow" onclick="setmf('cw',-0.78, -0.72);"></td>
+          <td><input type="button" value="FM"      onclick="setmf ('fm',  -6  ,  6  );"></td>
+          </tr>
+          <tr>
+          <td><input type="button" value="CW-nrw"   onclick="setmf('cw', 0.72, 0.78);"></td>
           <td><input type="button" value="LSB-nrw"  onclick="setmf('lsb', -2.2, -0.5);"></td>
           <td><input type="button" value="USB-nrw"  onclick="setmf('usb',  0.5,  2.2);"></td>
           <td><input type="button" value="AM-nrw"   onclick="setmf ('am', -2.5,  2.5);"></td>
-        </tr>
-      </table>
-      <span class="hideblind">
-      <span style="font-size:65%">Or drag the passband edges on the frequency scale.</span>
-      </span>
-    </div>
-
-    <div class="hideblind">
-      <div class="ctl">
-        <b>Waterfall view:</b>
-        <br>
-        <table>
-          <tr>
-            <td>
-              <span title="zoom out one step"><input type="button" value="zoom out" onclick="wfset(1);"></span>
-              <span title="zoom in one step"><input type="button" value="zoom in" onclick="wfset(0);"></span>
-            </td>
+          <td><input type="button" value="FM-nrw"   onclick="setmf ('fm', -3,  3);"></td>
           </tr>
-          <tr>
-            <td>
-              <span title="view entire frequency range of this receiver"><input type="button" value="max out" onclick="wfset(4);"></span>
-              <span title="zoom in as deep as possible"><input type="button" value="max in" onclick="wfset(2);"></span>
-            </td>
-          </tr>
-          <tr><td>
-        <span style="font-size:65%">Or use scroll wheel and dragging on waterfall.</span>
-          </td></tr>
-          <tr>
-            <td>
-              Speed:
-              <select id="wfspeed" onchange="waterfallspeed(this.value)">
-                <option value="4">slow</option>
-                <option value="2">medium</option>
-                <option value="1">fast</option>
-              </select>
-              <br>
-              Size:
-              <select id="wfsize" onchange="waterfallheight(this.value)">
-                <option value="50">small</option>
-                <option selected value="100">medium</option>
-                <option value="200">large</option>
-              </select>
-              <br>
-              View:
-              <select id="wfmode" onchange="waterfallmode(this.value)">
-                <option value="0">spectrum</option>
-                <option selected value="1">waterfall</option>
-                <option value="2">weak sigs</option>
-                <option value="3">strong sigs</option>
-              </select>
-            </td>
-          </tr>
-          <tr><td>
-          <script type="text/javascript">
-            if (dxinfoavailable) document.write('<input type="checkbox" name="hidedx" value="" onclick="sethidedx(this.checked)">Hide labels');
-          </script>
-          </td></tr>
         </table>
+          <hr>
+        <b>Bandwidth:</b>
+        <span id="numericalbandwidth6">?</span> kHz @ -6dB / 
+        <span id="numericalbandwidth60">?</span> kHz @ -60dB
+        <span class="hideblind">
+          <table style="margin-top: 8px;">
+        <td><input type="button" value="wider"   onclick="lo-=0.0525; hi+=0.0525; updbw();"></td>
+        <td><input type="button" value="narrower" onclick="lo+=0.0525; hi-=0.0525; updbw();"></td>
+      </table>
+        <span style="font-size:65%">Or drag the passband edges on the frequency scale</span>
+        </span>
       </div>
-    </div>
 
-
-    <div class="ctl">
-      <div class="hideblind">
-        <div style="width:250px;background-color:black;">
+      <div class="ctl">
+        <div class="hideblind">
+          <div style="width:250px;background-color:black;">
           <br>
           <div id="smeterpeak" style="width:100px;height:4px;background-color:#ff8000;position:absolute;">
             <div style="position:absolute;width:0px;height:0px;"></div>
@@ -361,43 +332,104 @@
           <br>
           <img src="smeter1.png" alt="[scale]">
           <br>
+          </div>
         </div>
-      </div>
-      <span id="numericalsmeter">?</span> dB;
-      peak
-      <span id="numericalsmeterpeak">?</span> dB;
-      <br>
-      <input id="mutecheckbox" title="disable sound" type="checkbox" value="" onclick="setmute(this.checked)">mute
-      <input id="squelchcheckbox" title="block noise if no signal" type="checkbox" value="" onclick="setsquelch(this.checked)">squelch
-      <input id="autonotchcheckbox" title="automatically filter out interfering carrier (beep/whistle)" type="checkbox" value="" onclick="setautonotch(this.checked)">autonotch
-      <br>
-      <span id="volumecontrol" style="white-space:nowrap; width:50%">
-        Volume:
-        <input type="range" min="-20" max="6" id="volumecontrol2" name="volume" value="0" step="1"
-        oninput="soundapplet.setvolume(Math.pow(10,this.value/10.))"
-        onchange="soundapplet.setvolume(Math.pow(10,this.value/10.))">
-      </span>
-      <div id="record_span">
-        <hr>
-        <b>Audio recording: </b>
-        <button id="recbutton" onclick="record_click(); return false">start</button>
-        <span id="reccontrol"></span>
+        <span id="numericalsmeter">?</span> dB;
+        peak
+        <span id="numericalsmeterpeak">?</span> dB;
+          <br>
+          <hr>
+          <b>Signal strength plot:</b>
+          <select id="sgraphchoice">
+            <option selected value=0>none</option>
+            <option value=1>fast</option>
+            <option value=10>slow</option>
+            <option value=100>very slow</option>
+          </select>
+        <div>
+          <canvas id="sgraph" style="width:100%; display:none;"></canvas>
+        </div>
+          <hr>
+        <input id="mutecheckbox" title="disable sound" type="checkbox" value="" onclick="setmute(this.checked)">mute
+        <input id="squelchcheckbox" title="block noise if no signal" type="checkbox" value="" onclick="setsquelch(this.checked)">squelch
+        <input id="autonotchcheckbox" title="automatically filter out interfering carrier (beep/whistle)" type="checkbox" value="" onclick="setautonotch(this.checked)">autonotch
         <br>
-        <div id="recwarning" style="width:300px; display:none; font-size:-1; color:red">
-          Your browser does not seem to support downloading the recording; please try a recent version of Firefox, Chrome or Opera.
+          <div id="record_span" style="display:none">
+          <hr>
+          <b>Audio recording: </b>
+          <button id="recbutton" onclick="record_click(); return false">start</button>
+          <span id="reccontrol"></span>
+          <br>
+          <div id="recwarning" style="width:300px; display:none; font-size:-1; color:red">Your browser does not seem to support downloading the recording; please try a recent version of Firefox, Chrome or Opera.</div>
+        </div>
+        <hr>
+        <span id="volumecontrol" style="white-space:nowrap; width:50%">
+          Volume:
+          <input type="range" min="-20" max="6" id="volumecontrol2" name="volume" value="-7" step="1"
+          oninput="soundapplet.setvolume(Math.pow(10,this.value/10.))"
+          onchange="soundapplet.setvolume(Math.pow(10,this.value/10.))">
+        </span>
+      </div>
+
+      <div class="hideblind">
+        <div class="ctl">
+         
+          <table cellwidth=500 align=left>
+          <tr>
+          
+          <td>
+          <b>Waterfall view:</b>
+          <script type="text/javascript"> if (dxinfoavailable) document.write('<input type="checkbox" name="hidedx" value="" onclick="sethidedx(this.checked)">Hide labels');     </script>
+          </td>
+           
+          <td>
+            Speed:
+            <select id="wfspeed" onchange="waterfallspeed(this.value)">
+              <option value="30">super slow</option>
+              <option value="10">very slow</option>
+              <option selected value="4">slow</option>
+              <option value="2">medium</option>
+              <option value="1">fast</option>
+            </select>
+            </td>
+            
+            <td>
+            Size:
+            <select id="wfsize" onchange="waterfallheight(this.value)">
+              <option value="50">small</option>
+              <option selected value="100">medium</option>
+              <option value="200">large</option>
+               <option value="400">larger</option>
+              <option value="600">huge</option>
+            </select>
+            </td>
+            
+            <td>
+            View:
+            <select id="wfmode" onchange="waterfallmode(this.value)">
+              <option value="0">spectrum</option>
+              <option selected value="1">waterfall</option>
+              <option value="2">weak sigs</option>
+              <option value="3">strong sigs</option>
+            </select>
+          </td>
+
+           <td>
+            <span title="view entire frequency range of this receiver"><input type="button" value="max out" onclick="wfset(4);"></span>
+            </td>
+            <td>
+            <span title="zoom in one step"><input type="button" value="zoom in" onclick="wfset(0);"></span>
+            </td>
+            <td>
+            <span title="zoom out one step"><input type="button" value="zoom out" onclick="wfset(1);"></span>
+            </td>
+            <td>
+            <span title="zoom in as deep as possible"><input type="button" value="max in" onclick="wfset(2);"></span>
+            </td>
+            </tr>
+          </table>
         </div>
       </div>
-      <hr>
-        <b>Signal strength plot:</b>
-        <select id="sgraphchoice">
-          <option value=0>none</option>
-          <option value=1>fast</option>
-          <option value=10>slow</option>
-        </select>
-      <div>
-        <canvas id="sgraph" style="width:100%; display:none;"></canvas>
-      </div>
-    </div>
 
     </div>
 
