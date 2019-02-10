@@ -405,11 +405,46 @@ function setmf(m, l, h)   // "set mode and filter"
 function set_mode(m)      // ...with appropriate filter
 {
    switch (m.toUpperCase()) {
-      case "USB": setmf("usb", 0.3,  2.7); break;
-      case "LSB": setmf("lsb", -2.7, -0.3); break;
-      case "AM":  setmf("am", -4,  4); break;
-      case "CW":  setmf("cw", -0.95,  -0.55); break;
-      case "FM":  setmf("fm", -8,  8); break;
+      case "USB":
+        setmf("usb", 0.3,  2.7);
+        document.getElementById("btn-CW").classList.remove('btn-selected');
+        document.getElementById("btn-LSB").classList.remove('btn-selected');
+        document.getElementById("btn-USB").classList.add('btn-selected');
+        document.getElementById("btn-AM").classList.remove('btn-selected');
+        document.getElementById("btn-FM").classList.remove('btn-selected');
+        break;
+      case "LSB":
+        setmf("lsb", -2.7, -0.3);
+        document.getElementById("btn-CW").classList.remove('btn-selected');
+        document.getElementById("btn-LSB").classList.add('btn-selected');
+        document.getElementById("btn-USB").classList.remove('btn-selected');
+        document.getElementById("btn-AM").classList.remove('btn-selected');
+        document.getElementById("btn-FM").classList.remove('btn-selected');
+        break;
+      case "AM":
+        setmf("am", -4,  4);
+        document.getElementById("btn-CW").classList.remove('btn-selected');
+        document.getElementById("btn-LSB").classList.remove('btn-selected');
+        document.getElementById("btn-USB").classList.remove('btn-selected');
+        document.getElementById("btn-AM").classList.add('btn-selected');
+        document.getElementById("btn-FM").classList.remove('btn-selected');
+        break;
+      case "CW":
+        setmf("cw", -0.95,  -0.55);
+        document.getElementById("btn-CW").classList.add('btn-selected');
+        document.getElementById("btn-LSB").classList.remove('btn-selected');
+        document.getElementById("btn-USB").classList.remove('btn-selected');
+        document.getElementById("btn-AM").classList.remove('btn-selected');
+        document.getElementById("btn-FM").classList.remove('btn-selected');
+        break;
+      case "FM":
+        setmf("fm", -8,  8);
+        document.getElementById("btn-CW").classList.remove('btn-selected');
+        document.getElementById("btn-LSB").classList.remove('btn-selected');
+        document.getElementById("btn-USB").classList.remove('btn-selected');
+        document.getElementById("btn-AM").classList.remove('btn-selected');
+        document.getElementById("btn-FM").classList.add('btn-selected');
+        break;
    }
 }
 
@@ -1228,7 +1263,7 @@ function bodyonload()
       registerTouchEvents("edgelower", touchlower, touchXYloweredge);
    }
 
-   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?nick=qo100-websdr_...&channels=%23es%27hail-2&uio=d4';
+   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?channels=%23es%27hail-2&uio=d4';
 }
 
 function registerTouchEvents(id, touchStart, touchMove) {
