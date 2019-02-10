@@ -43,7 +43,7 @@
         line-height: 1.0;
         padding-left: 0.5rem;
       }
-      #stats {
+      #under-canvas {
         text-align: left;
         margin-left: auto;
         margin-right: auto;
@@ -53,6 +53,9 @@
         margin-bottom: 10px;
         padding-left: 3px;
         padding-right: 3px;
+      }
+      #fullscreen-link {
+        float: right;
       }
       #chat {
         height: 480px;
@@ -119,7 +122,10 @@
 
         <div id="fft-col" class="col-xl-7">
           <canvas id="c" width="1" height="1" style="background-color: black;"></canvas>
-          <div id="stats"></div>
+          <div id="under-canvas">
+            <span id="stats">Loading..</span>
+            <span id="fullscreen-link"><button onclick="fft_fullscreen();">Open fullscreen</button></span>
+          </div>
         </div>
 
         <div id="chat-col" class="col-xl-5">
@@ -142,6 +148,7 @@
     var ws_sock = null;
     var ws_reconnect = null;
 
+    var el;
     var ctx;
     var canvasWidth;
     var canvasHeight;
@@ -150,8 +157,32 @@
     $(function() {
       canvasHeight = 450;
       canvasWidth = $("#fft-col").width();
+      
+      el = document.getElementById('c');
 
-      var el = document.getElementById('c');
+      initCanvas();
+
+      /* Connect to websocket feed */
+      ws_connect();
+     
+      var chat = new BATC_Chat({
+        element: $("#chat"),
+        room: 'eshail-wb',
+        nick: '',
+        viewers_cb: update_stats,
+        guests_allowed: true
+      });
+
+      /* Hide fullscreen link for iOS */
+      var n=navigator.userAgent.toLowerCase();
+      if((n.indexOf('iphone')!=-1) || (n.indexOf('ipad')!=-1) || (n.indexOf('ipod')!=-1) || (n.indexOf('ios')!=-1))
+      {
+        $("#fullscreen-link").hide();
+      }
+    });
+
+    function initCanvas()
+    {
       $("#c").attr( "width", canvasWidth );
       $("#c").attr( "height", canvasHeight );
 
@@ -178,18 +209,7 @@
 
         ctx.scale(ratio, ratio);
       }
-      
-      /* Connect to websocket feed */
-      ws_connect();
-     
-      var chat = new BATC_Chat({
-        element: $("#chat"),
-        room: 'eshail-wb',
-        nick: '',
-        viewers_cb: update_stats,
-        guests_allowed: true
-      });
-    });
+    }
 
     function normaliseSample(data)
     {
@@ -321,5 +341,84 @@
     function update_stats(num) {
       $("#stats").text("Users currently monitoring the spectrum: "+num);
     }
+
+    function fft_fullscreen()
+    {
+      if(el.requestFullscreen)
+      {
+        el.requestFullscreen();
+      }
+      else if(el.webkitRequestFullScreen)
+      {
+        el.webkitRequestFullScreen();
+      }
+      else if(el.mozRequestFullScreen)
+      {
+        el.mozRequestFullScreen();
+      }  
+    }
+
+    var checkFullScreen = function()
+    {
+      if(typeof document.fullScreen != "undefined")
+      {
+        return document.fullScreen;
+      }
+      else if(typeof document.webkitIsFullScreen != "undefined")
+      {
+        return document.webkitIsFullScreen;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    var previousOrientation = window.orientation;
+    var checkOrientation = function()
+    {
+      if(checkFullScreen())
+      {
+        if(window.orientation !== previousOrientation)
+        {
+          if (0 != (previousOrientation + window.orientation) % 180)
+          {
+            canvasWidth = window.innerHeight;
+            canvasHeight = window.innerWidth;
+            initCanvas();
+          }
+
+          previousOrientation = window.orientation;
+        }
+      }
+    };
+
+    window.addEventListener("fullscreenchange", function()
+    {
+      console.log("fullscreenchange");
+
+      if(checkFullScreen())
+      {
+        setTimeout(function() {
+          /* Set canvas to full document size */
+          canvasHeight = $("#c").height();
+          canvasWidth = $("#c").width();
+          initCanvas();
+        },10);
+      }
+      else
+      {
+        /* Reset canvas size */
+        canvasHeight = 450;
+        canvasWidth = $("#fft-col").width();
+        initCanvas();
+      }
+    });
+
+    window.addEventListener("resize", checkOrientation, false);
+    window.addEventListener("orientationchange", checkOrientation, false);
+
+    // (optional) Android doesn't always fire orientationChange on 180 degree turns
+    setInterval(checkOrientation, 2000);
   </script>
 </html>
