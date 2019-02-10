@@ -368,6 +368,10 @@
       {
         return document.webkitIsFullScreen;
       }
+      else if(typeof document.mozFullScreen != "undefined")
+      {
+        return document.mozFullScreen;
+      }
       else
       {
         return false;
@@ -395,8 +399,6 @@
 
     window.addEventListener("fullscreenchange", function()
     {
-      console.log("fullscreenchange");
-
       if(checkFullScreen())
       {
         setTimeout(function() {
@@ -418,7 +420,7 @@
     window.addEventListener("resize", checkOrientation, false);
     window.addEventListener("orientationchange", checkOrientation, false);
 
-    // (optional) Android doesn't always fire orientationChange on 180 degree turns
+    // Android doesn't always fire orientationChange on 180 degree turns
     setInterval(checkOrientation, 2000);
   </script>
 </html>
