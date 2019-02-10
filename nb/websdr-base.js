@@ -893,9 +893,9 @@ function updbw()
    if (lo<-maxf) lo=-maxf;
    if (hi>maxf) hi=maxf;
    var x6=document.getElementById('numericalbandwidth6');
-   var x60=document.getElementById('numericalbandwidth60');
+   //var x60=document.getElementById('numericalbandwidth60');
    x6.innerHTML=(hi-lo+0.091).toFixed(2);
-   x60.innerHTML=(hi-lo+0.551).toFixed(2);
+   //x60.innerHTML=(hi-lo+0.551).toFixed(2);
    setfreq(freq);
 }
 
@@ -1660,7 +1660,7 @@ function record_stop()
    var bb = new Blob(wavdata, {type: mimetype});
    if (!bb) document.getElementById('recwarning').style.display="block";
    rec_downloadurl = window.URL.createObjectURL(bb);
-   if (rec_downloadurl.indexOf('http')>=0) document.getElementById('recwarning').style.display="block";
+   //if (rec_downloadurl.indexOf('http')>=0) document.getElementById('recwarning').style.display="block";
    var fname='';
    try {
       fname=(new Date().toISOString()).replace(/\.[0-9]{3}/,"");
