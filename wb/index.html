@@ -163,6 +163,8 @@
 
       initCanvas();
 
+      updateFFT(null);
+
       /* Connect to websocket feed */
       ws_connect();
      
@@ -214,7 +216,7 @@
 
     function normaliseSample(data)
     {
-      return (data-300)*1.95;
+      return (data-320)*1.99;
     }
 
     function updateFFT(data)
@@ -260,15 +262,18 @@
       }
       ctx.restore();
       /* Draw FFT */
-      var data_length = data.length;
-      ctx.lineWidth=(canvasWidth/data_length);
-      ctx.strokeStyle = 'green';
-      for(i=0;i<data_length;i++)
+      if(data != null)
       {
-        ctx.beginPath();
-        ctx.moveTo((i/data_length)*canvasWidth, canvasHeight);
-        ctx.lineTo((i/data_length)*canvasWidth, ((normaliseSample(data[i])*canvasHeight)/1000));
-        ctx.stroke();
+        var data_length = data.length;
+        ctx.lineWidth=(canvasWidth/data_length);
+        ctx.strokeStyle = 'green';
+        for(i=0;i<data_length;i++)
+        {
+          ctx.beginPath();
+          ctx.moveTo((i/data_length)*canvasWidth, canvasHeight);
+          ctx.lineTo((i/data_length)*canvasWidth, ((normaliseSample(data[i])*canvasHeight)/1000));
+          ctx.stroke();
+        }
       }
     }
 
