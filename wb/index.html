@@ -216,7 +216,7 @@
 
     function normaliseSample(data)
     {
-      return (data-320)*1.99;
+      return (data-320)*2.1;
     }
 
     function updateFFT(data)
@@ -226,12 +226,12 @@
       /* Draw Vertical Lines */
       ctx.save();
       ctx.setLineDash([5, 20]);
-      for(i=1;i<10;i++)
+      for(i=1;i<8;i++)
       {
         /* Draw vertical line */
         ctx.beginPath();
-        ctx.moveTo(i*(canvasWidth/10),25);
-        ctx.lineTo(i*(canvasWidth/10),canvasHeight);
+        ctx.moveTo(i*(canvasWidth/8),25);
+        ctx.lineTo(i*(canvasWidth/8),canvasHeight);
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'grey';
         ctx.stroke();
@@ -239,7 +239,7 @@
         ctx.font = "15px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
-        ctx.fillText("10.4"+(90+i),i*(canvasWidth/10),17);
+        ctx.fillText("10.4"+(91+i),i*(canvasWidth/8),17);
       }
       ctx.restore();
       /* Draw Horizontal Lines */
