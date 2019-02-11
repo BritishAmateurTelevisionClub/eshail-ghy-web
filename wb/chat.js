@@ -238,7 +238,7 @@ var BATC_Chat = (function() {
                     };
                     appendMsg(helpMsg);
                 } else {
-                   if(nick!='') {
+                   if(nick!='' && messageText!='') {
                      socket.emit('message', {message: messageText});
                    }
                 }
