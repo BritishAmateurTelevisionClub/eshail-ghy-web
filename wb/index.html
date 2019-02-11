@@ -224,29 +224,20 @@
       /* Draw Vertical Lines */
       ctx.save();
       ctx.setLineDash([5, 20]);
-      for(i=0;i<8;i++)
+      for(i=1;i<10;i++)
       {
+        /* Draw vertical line */
         ctx.beginPath();
-        if((i%2))
-        {
-          ctx.moveTo(i*(canvasWidth/8),25);
-        }
-        else
-        {
-          ctx.moveTo(i*(canvasWidth/8),0);
-        }
-        ctx.lineTo(i*(canvasWidth/8),canvasHeight);
+        ctx.moveTo(i*(canvasWidth/10),25);
+        ctx.lineTo(i*(canvasWidth/10),canvasHeight);
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'grey';
         ctx.stroke();
         /* Draw Vertical Text */
-        if(i%2)
-        {
-          ctx.font = "15px Arial";
-          ctx.fillStyle = "white";
-          ctx.textAlign = "center";
-          ctx.fillText("10.4"+(91+i)+"MHz",i*(canvasWidth/8),17);
-        }
+        ctx.font = "15px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText("10.4"+(90+i),i*(canvasWidth/10),17);
       }
       ctx.restore();
       /* Draw Horizontal Lines */
