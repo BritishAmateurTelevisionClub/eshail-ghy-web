@@ -29,7 +29,6 @@
         display: block;
         margin-left: auto;
         margin-right: auto;
-        top-margin: 0;
         position: absolute;
         top: 50%;
         left: 50%;
@@ -60,7 +59,12 @@
       .text-center {
         text-align: center;
       }
+      .img-link-sdr {
+        width: 100%;
+      }
     </style>
+    <script src="/lib/jquery-3.3.1.min.js"></script>
+    <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
   </head>
   <body class="bg-light">
     <div id="logo-row" class="row">
@@ -100,38 +104,34 @@
             <p>
             OSCAR-100 is hosted on Es'hail-2, a Broadcast Transponder Satellite owned by the <a href="https://www.eshailsat.qa/" target="_blank">Es'hailSat Qatar Satellite Company</a>, the satellite is now in geostationary orbit at 25.9° E.
             </p>
-            <p>
-              <ul>
-                <li>More information on the OSCAR-100 project can be found at <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">AMSAT-DL Phase 4-A</a></li>
-              </ul>
-            </p>
+            <ul>
+              <li>More information on the OSCAR-100 project can be found at <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">AMSAT-DL Phase 4-A</a></li>
+            </ul>
             <hr>
             <p>
             The British Amateur Television Club and AMSAT-UK are operating a WebSDR for the narrowband segment and a Spectrum Viewer for the wideband (DATV) segment.
             </p>
-            <p>
-              <ul>
-                <li>Read about the WebSDR & Spectrum viewer station at <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank">https://wiki.batc.org.uk/Es'hail-2 Ground Station</a></li>
-              </ul>
-              <ul>
-                <li><a href="https://www.goonhilly.org/" target="_blank">Goonhilly Earth Station</a> is supporting the project, providing hosting for the Ground Station facility at their world-famous site in Cornwall, UK.</li>
-              </ul>
-            </p>
+            <ul>
+              <li>Read about the WebSDR & Spectrum viewer station at <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank">https://wiki.batc.org.uk/Es'hail-2 Ground Station</a></li>
+            </ul>
+            <ul>
+              <li><a href="https://www.goonhilly.org/" target="_blank">Goonhilly Earth Station</a> is supporting the project, providing hosting for the Ground Station facility at their world-famous site in Cornwall, UK.</li>
+            </ul>
           </div>
       </div>
       <div class="col-md-4">
-        <a href="/img/eshail-footprint.jpg" target="_blank"><img id="eshail-footprint" src="/img/eshail-footprint.jpg" /></a>
+        <a href="/img/eshail-footprint.jpg" target="_blank"><img id="eshail-footprint" src="/img/eshail-footprint.jpg" alt="Es'hail-2 Footprint Diagram" /></a>
       </div>
     </div>
     
     <div class="row">
       <a class="col-md-6" href="/nb/">
         <h3 class="text-center">Narrowband WebSDR (CW, SSB, etc.)</h3>
-        <img src="/img/websdr_generic.png" width="100%" />
+        <img class="img-link-sdr" src="/img/websdr_generic.png" alt="Narrowband WebSDR" />
       </a>
       <a class="col-md-6" href="/wb/">
         <h3 class="text-center">Wideband Spectrum Viewer (DATV)</h3>
-        <img src="/img/spectrum_monitor.png" width="100%" />
+        <img class="img-link-sdr" src="/img/spectrum_monitor.png" alt="Wideband Spectrum Viewer" />
       </a>
     </div>
     <hr>
@@ -139,6 +139,4 @@
       <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
     </footer>
   </body>
-  <script src="/lib/jquery-3.3.1.min.js"></script>
-  <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
 </html>

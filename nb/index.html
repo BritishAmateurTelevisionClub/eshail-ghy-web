@@ -7,7 +7,7 @@
     <meta name="author" content="BATC & AMSAT-UK">
     <link rel="shortcut icon" href="/favicon.ico">
     <link href="/lib/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
+    <style>
       body {
         margin-left: 25px;
         margin-right: 25px;
@@ -28,7 +28,6 @@
         display: block;
         margin-left: auto;
         margin-right: auto;
-        top-margin: 0;
         position: absolute;
         top: 50%;
         left: 50%;
@@ -140,14 +139,16 @@
       .btn-selected {
         border-color: black;
       }
+      #webchat-frame {
+        height: 500px;
+        width: 100%;
+      }
     </style>
+    <script src="/lib/jquery-3.3.1.min.js"></script>
+    <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
+    <script src="tmp/bandinfo.js"></script>
+    <script src="websdr-base.js"></script>
   </head>
-
-  <script src="/lib/jquery-3.3.1.min.js"></script>
-  <script src="/lib/bootstrap-4.2.1/js/bootstrap.min.js"></script>
-  <script src="tmp/bandinfo.js" type="text/javascript"></script>
-  <script src="websdr-base.js" type="text/javascript"></script>
-
   <body class="bg-light" onload=bodyonload()>
     <div id="logo-row" class="row">
       <div class="col-2">
@@ -178,24 +179,22 @@
     </div>
     <h1 id="page-title">Qatar OSCAR-100 Narrowband WebSDR</h1>
     <div id="top-description">
-      <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank"><img id="ghy-image" src="/img/ghy-view-400px.jpg" /></a>
+      <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank"><img id="ghy-image" src="/img/ghy-view-400px.jpg" alt="Photo of WebSDR Station at Goonhilly, UK" /></a>
       <p>
         This WebSDR, hosted at Goonhilly Earth Station in Cornwall, enables you to listen to the Qatar OSCAR-100 Narrow band transponder onboard the Es'hail-2 satellite.
       </p>
       <p>
         You can read more about the WebSDR & Spectrum Viewer station at <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank">wiki.batc.org.uk/Es'hail-2 Ground Station</a>
       </p>
-      <p>
-        <ul>
-          <li>For more details on Qatar OSCAR-100 see <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">amsat-dl.org/eshail-2-amsat-phase-4-a</a></li>
-        </ul>
-        <ul>
-          <li>The QO-100 wideband spectrum monitor can be found here <a href="https://eshail.batc.org.uk/wb/" target="_blank">eshail.batc.org.uk/wb/</a></li>
-        </ul>
-        <ul>
-          <li>More information about the WebSDR software can be found on <a href="http://www.websdr.org" target="_blank">www.websdr.org</a></li>
-        </ul>
-      </p>
+      <ul>
+        <li>For more details on Qatar OSCAR-100 see <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">amsat-dl.org/eshail-2-amsat-phase-4-a</a></li>
+      </ul>
+      <ul>
+        <li>The QO-100 wideband spectrum monitor can be found here <a href="https://eshail.batc.org.uk/wb/" target="_blank">eshail.batc.org.uk/wb/</a></li>
+      </ul>
+      <ul>
+        <li>More information about the WebSDR software can be found on <a href="http://www.websdr.org" target="_blank">www.websdr.org</a></li>
+      </ul>
       <p>
       <b><a href="https://twitter.com/amsatdl" target="_blank">Latest News:</a> Narrowband transponder is now open for amateur experimental use until official inauguration on Thursday!</b>
       </p>
@@ -284,7 +283,7 @@
             <input type="text" style="font-size:20px; text-align:center" size=10 name="frequency" onkeyup="setfreqif_fut(this.value);"> kHz
             <input type="submit" style="position:absolute; left:-999px; width:1px" value="submit">  <!-- IE sillyness: submit on enter doesn't work with visibility:none ; other IE sillyness requires the width setting -->
             <span style="margin-left: 15px;">
-              <script type="text/javascript"> if (dxinfoavailable) document.write('<input type="checkbox" name="hidedx" value="" onclick="sethidedx(!this.checked)" checked>&nbsp;labels</input>');</script>
+              <script> if (dxinfoavailable) document.write('<input type="checkbox" name="hidedx" value="" onclick="sethidedx(!this.checked)" checked>&nbsp;labels</input>');</script>
             </span>
             <div class="buttonrow">
               <span class="hideblind">
@@ -296,7 +295,7 @@
               <input class="modebutton" type="button" value="++" onclick="freqstep(+2)">
               <input class="modebutton" type="button" value="+++" onclick="freqstep(+3)">
             </div>
-            <script type="text/javascript"> document_bandbuttons(); </script>
+            <script> document_bandbuttons(); </script>
            </span>
           <div class="buttonrow" ID="mode-buttons">
             <button type="button" id="btn-CW"     class="modebutton"   onclick="set_mode('cw');"        >CW    </button>
@@ -409,12 +408,13 @@
       </div>
 
     </div>
+    </div>
 
     <br style="clear:both">
 
     <hr style="margin-top: 0.66rem;">
 
-    <iframe id="webchat-frame" width="100%" height="500"></iframe>
+    <iframe id="webchat-frame"></iframe>
 
     <hr>
     <div style="font-size:80%">
@@ -427,5 +427,5 @@
       <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
     </footer>
   </body>
-  <script src="websdr-sound.js" type="text/javascript"></script>
+  <script src="websdr-sound.js"></script>
 </html>
