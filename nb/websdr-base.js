@@ -127,8 +127,8 @@ function send_soundsettings_to_server()
      soundapplet.setparam(
          "f="+freq
         +"&band="+band
-        +"&lo="+lo
-        +"&hi="+hi
+        +"&lo="+Math.round(lo * 100) / 100
+        +"&hi="+Math.round(hi * 100) / 100
         +"&mode="+m
         +"&name="+user_id
         );

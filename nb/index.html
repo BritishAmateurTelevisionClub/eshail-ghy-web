@@ -314,8 +314,8 @@
       <div class="ctl">
        <span title="Or change bandwidth by dragging the passband edges on the frequency scale.">
         Filter: <b><span id="numericalbandwidth6">?</span></b> kHz
-          <button type="button" class="modebutton" style="min-width: 45px;" value="narrower" onclick="if (lo>0) lo*=1.1; else lo/=1.1; if (hi<0) hi*=1.1; else hi/=1.1; updbw();">-</button>
-          <button type="button" class="modebutton" style="min-width: 45px;" onclick="if (lo<0) lo*=1.1; else lo/=1.1; if (hi>0) hi*=1.1; else hi/=1.1; updbw();">+</button>
+          <button type="button" class="modebutton" style="min-width: 45px;" value="narrower" onclick="lo+=0.0525; hi-=0.0525; updbw();">-</button>
+          <button type="button" class="modebutton" style="min-width: 45px;" onclick="lo-=0.0525; hi+=0.0525; updbw();">+</button>
        </span>
           <hr>
         <input id="squelchcheckbox" title="block noise if no signal" type="checkbox" value="" 
