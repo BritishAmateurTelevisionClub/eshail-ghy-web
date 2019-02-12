@@ -222,8 +222,11 @@
     function updateFFT(data)
     {
       var i;
+
+      /* Clear Screen */
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      /* Draw Vertical Lines */
+
+      /* Draw Dashed Vertical Lines and headers */
       ctx.save();
       ctx.setLineDash([5, 20]);
       for(i=1;i<8;i++)
@@ -231,7 +234,7 @@
         /* Draw vertical line */
         ctx.beginPath();
         ctx.moveTo(i*(canvasWidth/8),25);
-        ctx.lineTo(i*(canvasWidth/8),canvasHeight);
+        ctx.lineTo(i*(canvasWidth/8),canvasHeight*(7/8));
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'grey';
         ctx.stroke();
@@ -242,6 +245,7 @@
         ctx.fillText("10.4"+(91+i),i*(canvasWidth/8),17);
       }
       ctx.restore();
+
       /* Draw Horizontal Lines */
       ctx.save();
       ctx.setLineDash([5, 10]);
@@ -254,18 +258,164 @@
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'grey';
         ctx.stroke();
-        ctx.font = "12px Arial";
-        ctx.fillStyle = "white";
-        ctx.textAlign = "center";
-        ctx.fillText((10*(4-i))+"dB",17,linePos+4);
-        ctx.fillText((10*(4-i))+"dB",canvasWidth-17,linePos+4);
+        /* Annotate lines above 0dB */
+        if(i!=4)
+        {
+          ctx.font = "12px Arial";
+          ctx.fillStyle = "white";
+          ctx.textAlign = "center";
+          ctx.fillText((10*(4-i))+"dB",17,linePos+4);
+          ctx.fillText((10*(4-i))+"dB",canvasWidth-17,linePos+4);
+        }
       }
       ctx.restore();
+
+      /* Draw Band Splits */
+      ctx.save();
+
+      /* Beacon & Simplex / Simplex */
+      ctx.beginPath();
+      ctx.moveTo(((494)-491)*(canvasWidth/8),canvasHeight*(7.1/8));
+      ctx.lineTo(((494)-491)*(canvasWidth/8),canvasHeight*(7.9/8));
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'grey';
+      ctx.stroke();
+
+      /* Simplex / RB-TV */
+      ctx.beginPath();
+      ctx.moveTo(((497)-491)*(canvasWidth/8),canvasHeight*(7.1/8));
+      ctx.lineTo(((497)-491)*(canvasWidth/8),canvasHeight*(7.9/8));
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'grey';
+      ctx.stroke();
+
+      ctx.restore();
+
+      /* Draw channel allocations */
+      ctx.save();
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'blue';
+
+      /* Beacon & Simplex 1Ms1 */
+      rolloff = 0.2*1.1;
+      ctx.beginPath();
+      ctx.moveTo(((491+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((492.5-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((492.5+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((494-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      /* Beacon & Simplex 2Ms */
+      rolloff = 0.2*2.0;
+      ctx.beginPath();
+      ctx.moveTo(((491+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.lineTo(((494-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.stroke();
+
+      /* Simplex 1Ms1 */
+      rolloff = 0.2*1.1;
+      ctx.beginPath();
+      ctx.moveTo(((494+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((495.5-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((495.5+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((497-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      /* Simplex 2Ms */
+      rolloff = 0.2*2.0;
+      ctx.beginPath();
+      ctx.moveTo(((494+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.lineTo(((497-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.stroke();
+
+      /* RB-TV 125Ks */
+      rolloff = 0.2*0.125;
+      ctx.beginPath();
+      ctx.moveTo(((497.00+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((497.25-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((497.25+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((497.50-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((497.50+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((497.75-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((497.75+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((498.00-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((498.00+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((498.25-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((498.25+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((498.50-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((498.50+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((498.75-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((498.75+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.lineTo(((499.00-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.15/8));
+      ctx.stroke();
+
+      /* RB-TV 333Ks */
+      rolloff = 0.2*0.333;
+      ctx.beginPath();
+      ctx.moveTo(((497.0+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.lineTo(((497.5-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((497.5+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.lineTo(((498.0-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((498.0+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.lineTo(((498.5-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(((498.5+rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.lineTo(((499.0-rolloff)-491)*(canvasWidth/8),canvasHeight*(7.3/8));
+      ctx.stroke();
+
+      ctx.restore();
+
+      /* Annotate Bands */
+      ctx.save();
+      ctx.font = "15px Arial";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText("Beacon & Simplex DATV",((492.5)-491)*(canvasWidth/8),canvasHeight-15);
+      ctx.fillText("Simplex DATV",((495.5)-491)*(canvasWidth/8),canvasHeight-15);
+      ctx.fillText("RB-TV",((498)-491)*(canvasWidth/8),canvasHeight-15);
+      ctx.restore();
+
       /* Draw FFT */
       if(data != null)
       {
         var data_length = data.length;
-        ctx.lineWidth=1;//(canvasWidth/data_length);
+        ctx.lineWidth=1;
         ctx.strokeStyle = 'green';
         var column;
 
@@ -273,26 +423,10 @@
         {
           column = ((normaliseSample(data[(((i*data_length)/ canvasWidth) | 0)])*canvasHeight)/1000)
           ctx.beginPath();
-          ctx.moveTo(i, canvasHeight);
+          ctx.moveTo(i, canvasHeight*(7/8));
           ctx.lineTo(i, column);
           ctx.stroke();
         }
-        
-/*
-        for(i=0;i<data_length;i++)
-        {
-          column = ((i/data_length)*canvasWidth) | 0;
-          if(column != previous_column)
-          {
-            if(previous_column)
-            ctx.beginPath();
-            ctx.moveTo(column, canvasHeight);
-            ctx.lineTo(column, ((normaliseSample(data[i])*canvasHeight)/1000));
-            ctx.stroke();
-            previous_column = column;
-          }
-        }
-        */
       }
     }
 
