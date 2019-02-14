@@ -143,7 +143,7 @@
 
       function normaliseSample(data)
       {
-        return (data-553)*5.5;
+        return (data-572)*5.9;
       }
 
       function updateFFT(data)
@@ -178,7 +178,7 @@
         ctx.setLineDash([5, 10]);
         for(i=1;i<=4;i++)
         {
-          linePos = i*(canvasHeight/4)-(canvasHeight/8);
+          linePos = i*(canvasHeight/4)-(canvasHeight/6);
           ctx.beginPath();
           ctx.moveTo(0+35, linePos);
           ctx.lineTo(canvasWidth-35, linePos);
@@ -345,15 +345,20 @@
           var data_length = data.length;
           ctx.lineWidth=1;
           ctx.strokeStyle = 'green';
-          var column;
 
+          var column;
+          var sample;
           for(i=0; i<canvasWidth; i++)
           {
-            column = ((normaliseSample(data[(((i*data_length)/ canvasWidth) | 0)])*start_height)/1000)
-            ctx.beginPath();
-            ctx.moveTo(i, start_height);
-            ctx.lineTo(i, column);
-            ctx.stroke();
+            sample = normaliseSample(data[(((i*data_length)/ canvasWidth) | 0)]);
+            if(sample < 1000)
+            {
+              column = ((sample*start_height)/1000);
+              ctx.beginPath();
+              ctx.moveTo(i, start_height);
+              ctx.lineTo(i, column);
+              ctx.stroke();
+            }
           }
         }
       }
