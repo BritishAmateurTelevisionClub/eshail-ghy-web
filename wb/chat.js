@@ -124,13 +124,13 @@ var BATC_Chat = (function() {
 
     var appendMsg = function(msg) {
         var ts = new Date(msg.time);
-        if(ts.toLocaleDateString()!=last_timestamp.toLocaleDateString())
-        {
-            $("#batchat-messages-panel").append($("<div></div>").addClass("batchat-messages-panel-object").append($("<span></span>").addClass("batchat-message-datestamp").text(ts.toLocaleDateString())));
-        }
         if(ts > last_timestamp)
         {
             last_timestamp = ts;
+            if(ts.toLocaleDateString()!=last_timestamp.toLocaleDateString())
+            {
+                $("#batchat-messages-panel").append($("<div></div>").addClass("batchat-messages-panel-object").append($("<span></span>").addClass("batchat-message-datestamp").text(ts.toLocaleDateString())));
+            }
             var nuMessageObj = $("<div></div>").addClass("batchat-messages-panel-object");
             nuMessageObj.append($("<span></span>").addClass("batchat-message-timestamp").text(timeString(ts)));
             nuMessageObj.append($("<span></span>").addClass("batchat-message-nick").text(msg.name));
