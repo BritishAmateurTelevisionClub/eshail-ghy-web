@@ -268,6 +268,14 @@ var BATC_Chat = (function() {
             initUsers(data.nicks);
         });
 
+        socket.on('reconnect', function (attemptNumber) {
+            //console.log(attemptNumber);
+            if(nick!='')
+            {
+                socket.emit('setnick',{nick: nick});
+            }
+        });
+
         if(nick!='')
         {
             socket.emit('setnick',{nick: nick});
