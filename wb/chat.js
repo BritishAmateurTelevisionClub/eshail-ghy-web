@@ -122,7 +122,7 @@ var BATC_Chat = (function() {
         return "";
     }
 
-    var appendMsg = function(msg) {
+    var appendMsg = function(msg, autoscroll) {
         var ts = new Date(msg.time);
         if(ts > last_timestamp)
         {
@@ -135,7 +135,7 @@ var BATC_Chat = (function() {
             nuMessageObj.append($("<span></span>").addClass("batchat-message-timestamp").text(timeString(ts)));
             nuMessageObj.append($("<span></span>").addClass("batchat-message-nick").text(msg.name));
             nuMessageObj.append($("<span></span>").addClass("batchat-message-text").text(msg.message));
-            var atBottom = ($("#batchat-messages-panel").scrollTop() >= ($("#batchat-messages-panel")[0].scrollHeight - 450));
+            var atBottom = autoscroll && ($("#batchat-messages-panel").scrollTop() >= ($("#batchat-messages-panel")[0].scrollHeight - 450));
             $("#batchat-messages-panel").append(nuMessageObj);
             if(atBottom)
             {
@@ -149,7 +149,7 @@ var BATC_Chat = (function() {
         {
             var dataLength = history.length;
             for (var i=0; i<dataLength; i++) {
-                appendMsg(history[i]);
+                appendMsg(history[i], false);
             }
             $("#batchat-messages-panel").scrollTop($("#batchat-messages-panel")[0].scrollHeight);
         }
@@ -241,7 +241,7 @@ var BATC_Chat = (function() {
                         'name':"BATC Chat Help",
                         'message':"To change nick: '/nick <your_name>'"
                     };
-                    appendMsg(helpMsg);
+                    appendMsg(helpMsg, true);
                 } else {
                    if(nick!='' && messageText!='') {
                      socket.emit('message', {message: messageText});
@@ -261,7 +261,7 @@ var BATC_Chat = (function() {
         });
         socket.on('message', function (data) {
             //console.log(data);
-            appendMsg(data);
+            appendMsg(data, true);
         });
         socket.on('nicks', function (data) {
             //console.log(data);
