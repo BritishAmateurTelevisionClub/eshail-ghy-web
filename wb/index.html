@@ -43,7 +43,7 @@
         padding-left: 0.5rem;
       }
       #under-canvas {
-        text-align: left;
+        text-align: center;
         margin-left: auto;
         margin-right: auto;
         width: 100%;
@@ -52,6 +52,12 @@
         margin-bottom: 10px;
         padding-left: 3px;
         padding-right: 3px;
+      }
+      #stats {
+        float: left;
+      }
+      #bandplan-link {
+        display: inline-block;
       }
       #fullscreen-link {
         float: right;
@@ -143,7 +149,7 @@
 
       function normaliseSample(data)
       {
-        return (data-572)*5.9;
+        return (data-565)*5.9;
       }
 
       function updateFFT(data)
@@ -346,37 +352,25 @@
           ctx.lineWidth=1;
           ctx.strokeStyle = 'green';
 
-          var column;
           var sample;
           for(i=0; i<canvasWidth; i++)
           {
             sample = normaliseSample(data[(((i*data_length)/ canvasWidth) | 0)]);
             if(sample < 1000)
             {
-              column = ((sample*start_height)/1000);
               ctx.beginPath();
               ctx.moveTo(i, start_height);
-              ctx.lineTo(i, column);
+              ctx.lineTo(i, ((sample*start_height)/1000));
               ctx.stroke();
             }
           }
         }
 
-        /*  Beacon */
-        rolloff = 0.2*2.0;
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'orange';
-        ctx.beginPath();
-        ctx.moveTo(((491.5+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(3.0/8));
-        ctx.lineTo(((493.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(3.0/8));
-        ctx.stroke();
+        /*  Beacon Description */
         ctx.font = "15px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.fillText("Beacon (DVB-S2, 2MS/s QPSK, 2/3)",((492.55)-491)*(canvasWidth/8),canvasHeight*(2.4/8));
-
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'blue';
       }
 
       function ws_connect()
@@ -596,6 +590,7 @@
           <canvas id="c" width="1" height="1" style="background-color: black;"></canvas>
           <div id="under-canvas">
             <span id="stats">Loading..</span>
+            <span id="bandplan-link"><a href="https://wiki.batc.org.uk/Es%27hail-2_DATV_Bandplan" target="_blank">DATV Bandplan Link</a></span>
             <span id="fullscreen-link"><button onclick="fft_fullscreen();">Open fullscreen</button></span>
           </div>
         </div>
