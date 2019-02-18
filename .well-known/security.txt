@@ -1,0 +1,4 @@
+Contact: phil@philcrump.co.uk
+Encryption: https://philcrump.co.uk/pubkey.txt
+Preferred-Languages: en
+Canonical: https://eshail.batc.org.uk/.well-known/security.txt
