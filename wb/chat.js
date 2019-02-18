@@ -212,7 +212,7 @@ var BATC_Chat = (function() {
        if(nick=='') {
            if(guests_allowed)
            {
-               $("#batchat-bottom-bar").attr("placeholder","Type '/nick your_name' and press enter to join.");
+               $("#batchat-bottom-bar").attr("placeholder","Type '/nick your_name' and press enter to register.");
            }
            else
            {
@@ -234,12 +234,18 @@ var BATC_Chat = (function() {
                     nick = messageText.substr(6).trim();
                     setCookie("batc-live-chat-username", nick, 28);
                     socket.emit('setnick',{nick: nick});
+                    var nickMsg = {
+                        'time': (new Date()).toISOString(),
+                        'name':"[Chat Help]",
+                        'message':"You are now known as '"+nick+"'"
+                    };
+                    appendMsg(nickMsg, true);
                     $("#batchat-bottom-bar").attr("placeholder","Type a message here and then press enter.");
                 } else if(messageText.toLowerCase().startsWith("/help")) {
                     var helpMsg = {
                         'time': (new Date()).toISOString(),
-                        'name':"BATC Chat Help",
-                        'message':"To change nick: '/nick <your_name>'"
+                        'name':"[Chat Help]",
+                        'message':"To change nick: '/nick your name'"
                     };
                     appendMsg(helpMsg, true);
                 } else {
