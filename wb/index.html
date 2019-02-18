@@ -353,9 +353,18 @@
           ctx.strokeStyle = 'green';
 
           var sample;
+          var sample_index;
+          var sample_index_f;
+          ctx.save();
           for(i=0; i<canvasWidth; i++)
           {
-            sample = normaliseSample(data[(((i*data_length)/ canvasWidth) | 0)]);
+            sample_index = (i*data_length)/ canvasWidth;
+            sample_index_f = sample_index | 0;
+            sample = normaliseSample(
+              data[sample_index_f]
+               + (sample_index - sample_index_f) * (data[sample_index_f+1] - data[sample_index_f])
+            );
+            //sample = normaliseSample(data[sample_index_f]);
             if(sample < 1000)
             {
               ctx.beginPath();
@@ -364,6 +373,7 @@
               ctx.stroke();
             }
           }
+          ctx.restore();
         }
 
         /*  Beacon Description */
