@@ -209,7 +209,8 @@ var BATC_Chat = (function() {
 
        nick = nick.substring(0,20);
 
-       if(nick=='') {
+       if(nick=='')
+       {
            if(guests_allowed)
            {
                $("#batchat-bottom-bar").attr("placeholder","Type '/nick your_name' and press enter to register.");
@@ -248,6 +249,16 @@ var BATC_Chat = (function() {
                         'message':"To change nick: '/nick your name'"
                     };
                     appendMsg(helpMsg, true);
+                } else if(messageText.toLowerCase().startsWith("/quit") || messageText.toLowerCase().startsWith("/exit")) {
+                    var helpMsg = {
+                        'time': (new Date()).toISOString(),
+                        'name':"[Chat Help]",
+                        'message':"You have been logged out."
+                    };
+                    nick = '';
+                    socket.emit('setnick',{nick: nick});
+                    appendMsg(helpMsg, true);
+                    $("#batchat-bottom-bar").attr("placeholder","Type '/nick your_name' and press enter to register.");
                 } else {
                    if(nick!='' && messageText!='') {
                      socket.emit('message', {message: messageText});
