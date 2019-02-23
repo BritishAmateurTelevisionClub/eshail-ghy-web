@@ -565,7 +565,6 @@
 
 
               end_signal = i;
-              mid_signal = start_signal + ((end_signal - start_signal)/2.0);
               var acc = 0;
               var acc_i = 0;
               for(j=(start_signal + (0.3*(end_signal - start_signal))) | 0; j<start_signal+(0.7*(end_signal - start_signal)); j++)
@@ -616,6 +615,8 @@
                 ctx.stroke();
               ctx.restore();
               */
+
+              mid_signal = start_signal + ((end_signal - start_signal)/2.0);
 
               signal_bw = align_symbolrate((end_signal - start_signal) * (8.0 / fft_data.length));
               signal_freq = 491 + ((mid_signal / fft_data.length) * 8.0);
