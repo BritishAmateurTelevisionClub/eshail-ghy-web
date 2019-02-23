@@ -184,7 +184,7 @@
         ctx.setLineDash([5, 10]);
         for(i=1;i<=4;i++)
         {
-          linePos = i*(canvasHeight/4)-(canvasHeight/6);
+          linePos = (i*(canvasHeight/4))-(canvasHeight/6);
           ctx.beginPath();
           ctx.moveTo(0+35, linePos);
           ctx.lineTo(canvasWidth-35, linePos);
@@ -202,6 +202,25 @@
           }
         }
         ctx.restore();
+
+        /* Draw Minor Horizontal Lines */
+        ctx.save();
+        ctx.setLineDash([1, 10]);
+        for(i=1;i<=20;i++)
+        {
+          if(i % 5 != 0)
+          {
+            linePos = (i*(canvasHeight/20))-(canvasHeight/6);
+            ctx.beginPath();
+            ctx.moveTo(0+35, linePos);
+            ctx.lineTo(canvasWidth-35, linePos);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'grey';
+            ctx.stroke();
+          }
+        }
+        ctx.restore();
+
 
         /* Draw Band Splits */
         ctx.save();
