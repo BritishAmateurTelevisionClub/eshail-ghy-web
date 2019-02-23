@@ -546,6 +546,7 @@
         var signal_freq;
 
         var start_height = canvasHeight*(7/8);
+        var text_x_position;
 
         for(i=2;i<fft_data.length;i++)
         {
@@ -624,6 +625,14 @@
               /* Sanity check bandwidth, and exclude beacon */
               if(signal_bw != 0 && signal_freq > 492.6)
               {
+                text_x_position = (mid_signal/fft_data.length)*canvasWidth;
+
+                /* Adjust for right-side overlap */
+                if(text_x_position > (0.9 * canvasWidth))
+                {
+                  text_x_position = canvasWidth - 55;
+                }
+
                 ctx.save();
 
                 ctx.font = "14px Arial";
@@ -631,7 +640,7 @@
                 ctx.textAlign = "center";
                 ctx.fillText(
                   print_symbolrate(signal_bw)+", "+print_frequency(signal_freq,signal_bw),
-                  (mid_signal/fft_data.length)*canvasWidth,
+                  text_x_position,
                   ((normaliseSample(strength_signal)*start_height)/1000) - 16
                 );
 
