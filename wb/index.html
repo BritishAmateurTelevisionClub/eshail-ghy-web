@@ -249,8 +249,8 @@
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'blue';
 
-        /* Beacon & Simplex 1Ms1 */
-        rolloff = 0.2*1.1;
+        /* Beacon & Simplex 1Ms */
+        rolloff = 0.2*1.0;
         ctx.beginPath();
         ctx.moveTo(((491.0+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(7.15/8));
         ctx.lineTo(((492.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(7.15/8));
@@ -268,8 +268,8 @@
         ctx.lineTo(((494-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(7.3/8));
         ctx.stroke();
 
-        /* Simplex 1Ms1 */
-        rolloff = 0.2*1.1;
+        /* Simplex 1Ms */
+        rolloff = 0.2*1.0;
         ctx.beginPath();
         ctx.moveTo(((494.0+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(7.15/8));
         ctx.lineTo(((495.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(7.15/8));
