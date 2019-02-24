@@ -135,7 +135,7 @@ var BATC_Chat = (function() {
             nuMessageObj.append($("<span></span>").addClass("batchat-message-timestamp").text(timeString(ts)));
             nuMessageObj.append($("<span></span>").addClass("batchat-message-nick").text(msg.name));
             nuMessageObj.append($("<span></span>").addClass("batchat-message-text").text(msg.message));
-            var atBottom = autoscroll && ($("#batchat-messages-panel").scrollTop() >= ($("#batchat-messages-panel")[0].scrollHeight - 450));
+            var atBottom = autoscroll && ($("#batchat-messages-panel").scrollTop() >= ($("#batchat-messages-panel")[0].scrollHeight - 550));
             $("#batchat-messages-panel").append(nuMessageObj);
             if(atBottom)
             {
