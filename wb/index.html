@@ -147,11 +147,6 @@
         }
       }
 
-      function normaliseSample(data)
-      {
-        return (data-565)*5.9;
-      }
-
       function updateFFT(data)
       {
         var i;
@@ -379,16 +374,15 @@
           {
             sample_index = (i*data_length)/ canvasWidth;
             sample_index_f = sample_index | 0;
-            sample = normaliseSample(
-              data[sample_index_f]
-               + (sample_index - sample_index_f) * (data[sample_index_f+1] - data[sample_index_f])
-            );
-            //sample = normaliseSample(data[sample_index_f]);
-            if(sample < 1000)
+            sample = data[sample_index_f]
+               + (sample_index - sample_index_f) * (data[sample_index_f+1] - data[sample_index_f]);
+            sample = (sample/65536.0);
+
+            if(sample > (1/8))
             {
               ctx.beginPath();
               ctx.moveTo(i, start_height);
-              ctx.lineTo(i, ((sample*start_height)/1000));
+              ctx.lineTo(i, canvasHeight-(sample * canvasHeight));
               ctx.stroke();
             }
           }
@@ -420,43 +414,46 @@
             ws_sock = new WebSocket(ws_url, "fft");
           }
 
-          try
+          ws_sock.binaryType = 'arraybuffer';
+
+          ws_sock.onopen = function()
           {
-            ws_sock.onopen = function()
-            {
-              window.clearInterval(ws_reconnect);
-              ws_reconnect = null;
-              console.log("Websocket Connection Opened");
-            } 
+            window.clearInterval(ws_reconnect);
+            ws_reconnect = null;
+            //console.log("Websocket Connection Opened");
+          } 
 
-            ws_sock.onmessage = function got_packet(msg)
+          ws_sock.onmessage = function got_packet(msg)
+          {
+            try
             {
-              //console.log("Websocket Data: "+msg.data);
-              parsed_fft = JSON.parse(msg.data).fft;
-              updateFFT(parsed_fft);
-              if(parsed_fft != null)
-              {
-                detect_signals(parsed_fft);
-              }
-            } 
-
-            ws_sock.onclose = function()
-            {
-              ws_sock.close();
-              ws_sock = null;
-              
-              if(!ws_reconnect)
-              {
-                ws_reconnect = setInterval(function()
-                {
-                  ws_connect();
-                },500);
-              }
+              parsed_fft = new Uint16Array(msg.data);
+              //console.log(parsed_fft);
             }
-          }
-          catch(exception)
+            catch(e)
+            {
+              console.log("Error parsing binary!",e);
+            }
+
+            if(parsed_fft != null)
+            {
+              updateFFT(parsed_fft);
+              detect_signals(parsed_fft);
+            }
+          } 
+
+          ws_sock.onclose = function()
           {
-            console.log("Websocket Error" + exception);  
+            ws_sock.close();
+            ws_sock = null;
+            
+            if(!ws_reconnect)
+            {
+              ws_reconnect = setInterval(function()
+              {
+                ws_connect();
+              },500);
+            }
           }
         }
         else
@@ -534,8 +531,8 @@
         var i;
         var j;
 
-        var noise_level = 724;
-        var signal_threshold = 710;
+        var noise_level = 11000;
+        var signal_threshold = 20000;
 
         var in_signal = false;
         var start_signal;
@@ -552,7 +549,7 @@
         {
           if(!in_signal)
           {
-            if((fft_data[i] + fft_data[i-1] + fft_data[i-2])/3.0 < signal_threshold)
+            if((fft_data[i] + fft_data[i-1] + fft_data[i-2])/3.0 > signal_threshold)
             {
               in_signal = true;
               start_signal = i;
@@ -560,7 +557,7 @@
           }
           else /* in_signal == true */
           {
-            if((fft_data[i] + fft_data[i-1] + fft_data[i-2])/3.0 > signal_threshold)
+            if((fft_data[i] + fft_data[i-1] + fft_data[i-2])/3.0 < signal_threshold)
             {
               in_signal = false;
 
@@ -574,19 +571,21 @@
                 acc_i = acc_i + 1;
               }
               strength_signal = acc / acc_i;
+              
               /*
               ctx.save();
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, ((normaliseSample(strength_signal)*start_height)/1000));
-                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, ((normaliseSample(strength_signal)*start_height)/1000));
+                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight-((strength_signal/65536) * canvasHeight));
+                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight-((strength_signal/65536) * canvasHeight));
                 ctx.stroke();
               ctx.restore();
               */
+              
 
               /* Find real start of top of signal */
-              for(j = start_signal; (fft_data[j] - noise_level) > 0.8*(strength_signal - noise_level); j++)
+              for(j = start_signal; (fft_data[j] - noise_level) < 0.8*(strength_signal - noise_level); j++)
               {
                 start_signal = j;
               }
@@ -595,14 +594,14 @@
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, ((normaliseSample(strength_signal)*start_height)/1000) + 20);
-                ctx.lineTo((start_signal/fft_data.length)*canvasWidth, ((normaliseSample(strength_signal)*start_height)/1000) - 20);
+                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) + 20);
+                ctx.lineTo((start_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) - 20);
                 ctx.stroke();
               ctx.restore();
               */
 
               /* Find real end of the top of signal */
-              for(j = end_signal; (fft_data[j] - noise_level) > 0.8*(strength_signal - noise_level); j--)
+              for(j = end_signal; (fft_data[j] - noise_level) < 0.8*(strength_signal - noise_level); j--)
               {
                 end_signal = j;
               }
@@ -611,8 +610,8 @@
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((end_signal/fft_data.length)*canvasWidth, ((normaliseSample(strength_signal)*start_height)/1000) + 20);
-                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, ((normaliseSample(strength_signal)*start_height)/1000) - 20);
+                ctx.moveTo((end_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) + 20);
+                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) - 20);
                 ctx.stroke();
               ctx.restore();
               */
@@ -641,7 +640,7 @@
                 ctx.fillText(
                   print_symbolrate(signal_bw)+", "+print_frequency(signal_freq,signal_bw),
                   text_x_position,
-                  ((normaliseSample(strength_signal)*start_height)/1000) - 16
+                  canvasHeight-((strength_signal/65536) * canvasHeight) - 16
                 );
 
                 ctx.restore();
@@ -794,6 +793,8 @@
       <ul>
         <li>The QO-100 narrowband websdr can be found here <a href="https://eshail.batc.org.uk/nb/" target="_blank">eshail.batc.org.uk/nb/</a></li>
       </ul>
+      <b>If the spectrum doesn't appear to load correctly, please refresh. The webpage code has been updated.</b>
+      <br><br>
     </div>
 
     <div id="content" role="main">
