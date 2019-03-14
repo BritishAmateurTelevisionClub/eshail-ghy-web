@@ -406,7 +406,7 @@ function set_mode(m)      // ...with appropriate filter
 {
    switch (m.toUpperCase()) {
       case "USB":
-        setmf("usb", 0.3,  2.7);
+        setmf("usb", 0.3+(0.091/2),  3.0-(0.091/2));
         document.getElementById("btn-CW").classList.remove('btn-selected');
         document.getElementById("btn-LSB").classList.remove('btn-selected');
         document.getElementById("btn-USB").classList.add('btn-selected');
@@ -414,7 +414,7 @@ function set_mode(m)      // ...with appropriate filter
         document.getElementById("btn-FM").classList.remove('btn-selected');
         break;
       case "LSB":
-        setmf("lsb", -2.7, -0.3);
+        setmf("lsb", -3.0, -0.3);
         document.getElementById("btn-CW").classList.remove('btn-selected');
         document.getElementById("btn-LSB").classList.add('btn-selected');
         document.getElementById("btn-USB").classList.remove('btn-selected');
