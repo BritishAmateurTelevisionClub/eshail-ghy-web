@@ -1621,7 +1621,7 @@ function document_waterfalls()
    if (typeof prep_html5waterfalls =="function") prep_html5waterfalls();
    else {
      script = document.createElement('script');
-     script.src = 'websdr-waterfall.js';
+     script.src = 'websdr-waterfall.js?v=1';
      script.type = 'text/javascript';
      document.body.appendChild(script);
    }
