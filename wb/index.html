@@ -531,8 +531,8 @@
         var i;
         var j;
 
-        var noise_level = 11000;
-        var signal_threshold = 20000;
+        const noise_level = 11000;
+        const signal_threshold = 16000;
 
         var in_signal = false;
         var start_signal;
@@ -572,13 +572,13 @@
               }
               strength_signal = acc / acc_i;
               
-              /*
+              /* 
               ctx.save();
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight-((strength_signal/65536) * canvasHeight));
-                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight-((strength_signal/65536) * canvasHeight));
+                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight-((signal_threshold/65536) * canvasHeight));
+                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight-((signal_threshold/65536) * canvasHeight));
                 ctx.stroke();
               ctx.restore();
               */
