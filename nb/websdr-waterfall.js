@@ -8,9 +8,9 @@
 //}
 
 // Waterfall dynamic range adjustment - Phil Crump
-const adjustWfRange_addition = -5;
+const adjustWfRange_addition = -10;
 const adjustWfRange_threshold = 60;
-const adjustWfRange_scale = 1.6;
+const adjustWfRange_scale = 1.65;
 
 function adjustWfRange(d)
 {
@@ -366,7 +366,7 @@ function adjustWfRange(d)
       g = d.o;
       if (0 != a.mode)
       {
-        for (c = 0; 1024 > c; c++) n = y[c], g.data[4 * c] = E[adjustWfRange(n)], g.data[4 * c + 1] = F[adjustWfRange(n)], g.data[4 * c + 2] = G[adjustWfRange(n)], g.data[4 * c + 3] = 255;
+        for (c = 0; 1024 > c; c++) n = adjustWfRange(y[c]), g.data[4 * c] = E[n], g.data[4 * c + 1] = F[n], g.data[4 * c + 2] = G[n], g.data[4 * c + 3] = 255;
         M++;
         300 == M && (M = 0);
         x ? (d.a.putImageData(g, 0, q), d.style.top = d.height - q + "px", j.style.top = -q + "px", q++, q >= d.height && (q = 0, c = j, j = d, d = c)) : B ? b.r = 1 : (d.a.drawImage(d, 0, 1, d.width, d.height - 1, 0, 0
