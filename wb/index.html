@@ -818,4 +818,15 @@
       <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
     </footer>
   </body>
+  <script>
+    const ping_interval = 10*1000;
+    function ping() {
+      var request = new XMLHttpRequest();
+      request.open('GET', 'https://eshail.batc.org.uk/a.gif', true);
+      request.send();
+      request = null;
+      setTimeout(ping, ping_interval);
+    }
+    setTimeout(ping, ping_interval);
+  </script>
 </html>

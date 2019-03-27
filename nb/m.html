@@ -729,5 +729,15 @@ function mem_show()
 </script>
 <script src="websdr-sound.js" type="text/javascript"></script>
 <script src="websdr-waterfall.js" type="text/javascript"></script>
-
+  <script>
+    const ping_interval = 10*1000;
+    function ping() {
+      var request = new XMLHttpRequest();
+      request.open('GET', 'https://eshail.batc.org.uk/a.gif?f='+f+'&m='+mode, true);
+      request.send();
+      request = null;
+      setTimeout(ping, ping_interval);
+    }
+    setTimeout(ping, ping_interval);
+  </script>
 </body>
