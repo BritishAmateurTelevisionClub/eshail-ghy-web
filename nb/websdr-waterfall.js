@@ -415,7 +415,7 @@ function adjustWfRange(d)
       this.style.height = g + "px";
       this.style.width = a + "px";
       b.width = a;
-      this.e("GET /~~waterparam?width=" + a)
+      //this.e("GET /~~waterparam?width=" + a)
     };
     b.setheight = function() {};
     b.setzoom = L;
