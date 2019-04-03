@@ -468,9 +468,14 @@
 
       function align_symbolrate(width)
       {
-        if(width < 0.045)
+        //console.log(width);
+        if(width < 0.022)
         {
           return 0;
+        }
+        else if(width < 0.060)
+        {
+          return 0.035;
         }
         else if(width < 0.086)
         {
