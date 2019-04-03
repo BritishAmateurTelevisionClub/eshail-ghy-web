@@ -382,7 +382,7 @@
             {
               ctx.beginPath();
               ctx.moveTo(i, start_height);
-              ctx.lineTo(i, canvasHeight-(sample * canvasHeight));
+              ctx.lineTo(i, canvasHeight-(Math.min(sample, 1.0) * canvasHeight));
               ctx.stroke();
             }
           }
