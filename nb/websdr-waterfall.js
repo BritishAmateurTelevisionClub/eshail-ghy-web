@@ -8,7 +8,7 @@
 //}
 
 // Waterfall dynamic range adjustment - Phil Crump
-const adjustWfRange_addition = -10;
+const adjustWfRange_addition = -5;
 const adjustWfRange_threshold = 60;
 const adjustWfRange_scale = 1.65;
 
