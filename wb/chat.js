@@ -122,6 +122,23 @@ var BATC_Chat = (function() {
         return "";
     }
 
+    const hrefRegex = /((?:(http|https|Http|Https):\/\/(?:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,64}(?:\:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,25})?\@)?)?((?:(?:[a-zA-Z0-9][a-zA-Z0-9\-]{0,64}\.)+(?:(?:aero|arpa|asia|a[cdefgilmnoqrstuwxz])|(?:biz|b[abdefghijmnorstvwyz])|(?:cat|com|coop|c[acdfghiklmnoruvxyz])|d[ejkmoz]|(?:edu|e[cegrstu])|f[ijkmor]|(?:gov|g[abdefghilmnpqrstuwy])|h[kmnrtu]|(?:info|int|i[delmnoqrst])|(?:jobs|j[emop])|k[eghimnrwyz]|l[abcikrstuvy]|(?:mil|mobi|museum|m[acdghklmnopqrstuvwxyz])|(?:name|net|n[acefgilopruz])|(?:org|om)|(?:pro|p[aefghklmnrstwy])|qa|r[eouw]|s[abcdeghijklmnortuvyz]|(?:tel|travel|t[cdfghjklmnoprtvwz])|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]))|(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[0-9])))(?:\:\d{1,5})?)(\/(?:(?:[a-zA-Z0-9\;\/\?\:\@\&\=\#\~\-\.\+\!\*\'\(\)\,\_])|(?:\%[a-fA-F0-9]{2}))*)?(?:\b|$)/gi;
+    const htmlParser = new DOMParser();
+
+    var messageStripAndHrefs = function(msg) {
+        var textMsg = htmlParser.parseFromString(msg, 'text/html').body.textContent;
+        if(!textMsg)
+        {
+            return "";
+        }
+        else
+        {
+            return textMsg.replace(hrefRegex, function(url) {
+                return '<a href="' + url + '" target="_blank">' + url + '</a>';
+            });
+        }
+    }
+
     var appendMsg = function(msg, autoscroll) {
         var ts = new Date(msg.time);
         if(ts > last_timestamp)
@@ -134,7 +151,7 @@ var BATC_Chat = (function() {
             var nuMessageObj = $("<div></div>").addClass("batchat-messages-panel-object");
             nuMessageObj.append($("<span></span>").addClass("batchat-message-timestamp").text(timeString(ts)));
             nuMessageObj.append($("<span></span>").addClass("batchat-message-nick").text(msg.name));
-            nuMessageObj.append($("<span></span>").addClass("batchat-message-text").text(msg.message));
+            nuMessageObj.append($("<span></span>").addClass("batchat-message-text").html(messageStripAndHrefs(msg.message)));
             var atBottom = autoscroll && ($("#batchat-messages-panel").scrollTop() >= ($("#batchat-messages-panel")[0].scrollHeight - 550));
             $("#batchat-messages-panel").append(nuMessageObj);
             if(atBottom)
