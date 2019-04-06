@@ -65,6 +65,22 @@
       #chat {
         height: 580px;
       }
+      #under-chat {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        color: #010101;
+        font-weight: bold;
+        margin-top: 3px;
+        padding-left: 3px;
+        padding-right: 3px;
+      }
+      #chat-logs-link {
+        font-weight: bold;
+        text-align: center;
+        display: inline-block;
+      }
       #footer {
         padding-top: 20px;
         text-align: center;
@@ -89,7 +105,7 @@
 
       /* On load */
       $(function() {
-        canvasHeight = 550;
+        canvasHeight = 580;
         canvasWidth = $("#fft-col").width();
         
         el = document.getElementById('c');
@@ -814,6 +830,9 @@
 
         <div id="chat-col" class="col-xl-5">
           <div id="chat"></div>
+          <div id="under-chat">
+            <a id="chat-logs-link" href="chat/log/" target="_blank">Chat Logs</a>
+          </div>
         </div>
 
       </div>
