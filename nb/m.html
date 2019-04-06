@@ -7,19 +7,7 @@
 <meta name="description" content="Mobile BATC & AMSAT-UK Qatar OSCAR-100 (Es'hail-2) Narrowband WebSDR">
 <meta name="author" content="BATC & AMSAT-UK">
 <link rel="shortcut icon" href="/favicon.ico">
-</head>
-<body>
-<h1>QO-100 Mobile Narrowband WebSDR</h1>
-    <p>
-      This is the mobile version of the <a href=".">Qatar OSCAR-100 Narrowband WebSDR</a>.
-    </p>
-    <p>
-      Tuning is different from the normal WebSDR: Drag the waterfall, not the yellow filter curve.
-    </p>
-    <hr>
-
-<!-- strictly the css should go into the head not the body of the html, but well... -->
-<style type="text/css">
+<style>
 button { height:45px }
 body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
@@ -71,13 +59,27 @@ div.freqinfo2 {
 .warning {
 color:red; font-weight:bold; border:2px; border-style:solid; border-color:black; background-color:white; margin:8px; padding:4px; display:none;
 }
+#mobile_audio_start_btn {
+  display: none;
+}
 #mobile_audio_start_btn > button {
   width:100%;
   color:red;
   font-weight: bold;
   font-size: 1em;
+
+  box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;
+  border-color: black;
+  margin:2px;
 }
 </style>
+</head>
+<body onload=bodyonload()>
+<h2>QO-100 Mobile NB WebSDR</h2>
+    <p>
+      Tuning is different from the normal WebSDR: Drag the waterfall, not the yellow filter curve.
+    </p>
+    <hr>
 
 <div id="browserwarning" class="warning">
 Your browser is not supported; if it does not work, please try again with Firefox on Android, or Safari version 6 or later on iOS.</div>
@@ -96,7 +98,6 @@ Your browser is not supported; if it does not work, please try again with Firefo
      if (n.indexOf('ipod')!=-1) sup_iOS=true;
      if (n.indexOf('ios')!=-1) sup_iOS=true;
   } catch (e) {};
-  if (sup_iOS || sup_android) document.write('<div id="mobile_audio_start_btn"><button onclick="start_audio();">Tap to start audio!</button><br></div>');
 </script>
 <input type="number" name="frequency" step="any" onFocus="freqfocus=true; this.value=''" onBlur="freqfocus=false;" class="freqbar" style="display:inline-block; width:60%;" /
 ><div class="freqinfo1"><div class="freqinfo2" id="freqinfo"></div></div
@@ -119,7 +120,9 @@ Your browser is not supported; if it does not work, please try again with Firefo
     <img src="smeter1.png" alt="[scale]" style="position:absolute; top:23px; left:0px">
   </div>
 </div
-><button class="relbutton6" onclick="freqstep(-3)">&lt;&lt;&lt;</button
+>
+<div id="mobile_audio_start_btn"><button onclick="start_audio();">Tap to start audio!</button><br></div>
+<button class="relbutton6" onclick="freqstep(-3)">&lt;&lt;&lt;</button
 ><button class="relbutton6" onclick="freqstep(-2)">&lt;&lt;</button
 ><button class="relbutton6" onclick="freqstep(-1)">&lt;</button
 ><button class="relbutton6" onclick="freqstep(+1)">&gt;</button
@@ -228,12 +231,29 @@ setmode_sel(document.getElementById('modesel'));
 
 function start_audio()
 {
-   // Safari on iOS only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
-   if (!document.ct) document.ct= new webkitAudioContext();
-   var s = document.ct.createBufferSource();
-   s.connect(document.ct.destination);
-   try { s.start(0); } catch(e) { s.noteOn(0); }
-   document.getElementById("mobile_audio_start_btn").style.display="none";
+  if(sup_iOS)
+  {
+    // Safari on iOS only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
+    if (!document.ct) document.ct = new webkitAudioContext();
+    var s = document.ct.createBufferSource();
+    s.connect(document.ct.destination);
+    try { s.start(0); } catch(e) { s.noteOn(0); };
+  }
+  else
+  {
+    document['ct'].resume();
+  }
+
+  setTimeout(function() {
+    if(document['ct'].state != 'suspended')
+    {
+      document.getElementById("mobile_audio_start_btn").style.display = "none";
+    }
+    else
+    {
+      alert("Audio playback doesn't appear to be working, please refresh or contact project team if the problem persists.");
+    }
+  }, 50);
 }
 
 
@@ -259,7 +279,7 @@ function soundappletstarted()
 function waterfallappletstarted() 
 { 
    waterfallapplet[0].setslow(8);
-   bandinfo[band].zoom=bandinfo[band].maxzoom-2;
+   bandinfo[band].zoom=1;
    centerwaterfall();
    started++;
    if (started==2) setfreq(freq);
@@ -724,6 +744,20 @@ function mem_show()
    }
    document.getElementById('memories').innerHTML=s;
 }
+
+// Safari on iOS only plays webaudio after it has been started by clicking a button, so this function must be called from a button's onclick handler
+function bodyonload()
+{
+  if (!document.ct) document.ct= new webkitAudioContext();
+  var s = document.ct.createBufferSource();
+  s.connect(document.ct.destination);
+  try { s.start(0); } catch(e) { s.noteOn(0); }
+  if(document['ct'].state == 'suspended')
+  {
+    document.getElementById("mobile_audio_start_btn").style.display="inline";
+  }
+}
+ 
 
 //----------------------------------------------------------------------------------------
 </script>
