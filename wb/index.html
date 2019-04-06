@@ -94,9 +94,14 @@
     <script src="/lib/socket.io-2.2.0.min.js"></script>
     <script src="chat.js"></script>
     <script>
-      var ws_url = "wss://"+window.location.hostname+"/wb/fft";
+      const ws_url = "wss://"+window.location.hostname+"/wb/fft";
       var ws_sock = null;
       var ws_reconnect = null;
+
+      var render_timer;
+      const render_interval = 250; // ms
+      var render_busy = false;
+      var render_buffer = [];
 
       var el;
       var ctx;
@@ -444,17 +449,14 @@
             try
             {
               parsed_fft = new Uint16Array(msg.data);
-              //console.log(parsed_fft);
+              if(parsed_fft != null)
+              {
+                render_buffer.push(parsed_fft);
+              }
             }
             catch(e)
             {
               console.log("Error parsing binary!",e);
-            }
-
-            if(parsed_fft != null)
-            {
-              updateFFT(parsed_fft);
-              detect_signals(parsed_fft);
             }
           } 
 
@@ -477,6 +479,32 @@
           alert("Websockets not supported in your browser!");
         }
       }
+
+      render_timer = setInterval(function()
+      {
+        if(!render_busy)
+        {
+          render_busy = true;
+          if(render_buffer.length > 0)
+          {
+            /* Pull oldest frame off the buffer and render it */
+            var data_frame = render_buffer.shift();
+            updateFFT(data_frame);
+            detect_signals(data_frame);
+
+            /* If we're buffering up, remove old queued frames (unsure about this) */
+            if(render_buffer.length > 2)
+            {
+              render_buffer.splice(0, render_buffer.length - 2);
+            }
+          }
+          render_busy = false;
+        }
+        else
+        {
+          console.log("Slow render blocking next frame, configured interval is ", render_interval);
+        }
+      }, render_interval);
 
       function update_stats(num) {
         $("#stats").text("Users: "+num);
