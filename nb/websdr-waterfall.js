@@ -251,8 +251,8 @@ function adjustWfRange(d)
       }
     }
     b.width || (b.width = 1024);
-    b.height || (b.height = 100);
-    document.getElementById(b.div).innerHTML = '<div id="wfcdiv' + v + '" style="height:100px;overflow:hidden;position:relative;"><canvas class="html5waterfall" id="wf1canvas' + v + '" width="' + b.width + '" height="' + b.height + '" style="position:absolute">test</canvas><canvas class="html5waterfall" id="wf2canvas' +
+    b.height || (b.height = 200);
+    document.getElementById(b.div).innerHTML = '<div id="wfcdiv' + v + '" style="height:' + b.height + 'px;overflow:hidden;position:relative;"><canvas class="html5waterfall" id="wf1canvas' + v + '" width="' + b.width + '" height="' + b.height + '" style="position:absolute">test</canvas><canvas class="html5waterfall" id="wf2canvas' +
       v + '" width="' + b.width + '" height="' + b.height + '" style="position:absolute">test</canvas></div>';
     b.h = document.getElementById("wfcdiv" + v);
     var s = 0 <= v ? "on" : "off";
