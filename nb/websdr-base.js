@@ -1033,6 +1033,8 @@ function soundappletstarted2()
 
 function waterfallappletstarted(id)
 {
+  // Phil 6th Apr 2019 - To zoom to transponder bandwidth
+  waterfallapplet[0].setzoom(-2, 512);
    // this function is called when a waterfall applet becomes active
    waitingforwaterfalls--;
    if (waitingforwaterfalls<0) waitingforwaterfalls=0; // shouldn't happen...
@@ -1227,8 +1229,8 @@ function bodyonload()
       e.realband=i;
       e.effcenterfreq=e.centerfreq;
       e.effsamplerate=e.samplerate;
-      e.zoom=0;
-      e.start=0;
+      e.zoom=0;//1;
+      e.start=0;//8192;
       e.minzoom=0;
    }
 
