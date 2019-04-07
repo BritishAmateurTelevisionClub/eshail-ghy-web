@@ -266,28 +266,49 @@ function showdx(b)
    }
 }
 
+const band_markers = [
+  {
+    f: 10489550.000, m: "cw", t: " Lower Beacon"
+  },
+  {
+    f: 10489555.000, m: "usb", t: " CW ->"
+  },
+  {
+    f: 10489600.000, m: "usb", t: " NB Digi ->"
+  },
+  {
+    f: 10489620.000, m: "usb", t: " Digi ->"
+  },
+  {
+    f: 10489640.000, m: "usb", t: " Mixed ->"
+  },
+  {
+    f: 10489690.000, m: "usb", t: " SSB ->"
+  },
+  {
+    f: 10489795.000, m: "usb", t: " Guard Band ->"
+  },
+  {
+    f: 10489798.250, m: "usb", t: " Upper Beacon"
+  }
+];
+
 function fetchdx(b)
 {
-  var xmlHttp;
-  try { xmlHttp=new XMLHttpRequest(); }
-    catch (e) { try { xmlHttp=new ActiveXObject("Msxml2.XMLHTTP"); }
-      catch (e) { try { xmlHttp=new ActiveXObject("Microsoft.XMLHTTP"); }
-        catch (e) { alert("Your browser does not support AJAX!"); return false; } } }
-  xmlHttp.onreadystatechange=function()
+  var index;
+  var marker;
+  var f_min = (bi[b].effcenterfreq-bi[b].effsamplerate/2);
+  var f_max = (bi[b].effcenterfreq+bi[b].effsamplerate/2);
+  for(index in band_markers)
+  {
+    marker = band_markers[index];
+    if(marker.f > f_min && marker.f < f_max)
     {
-    if(xmlHttp.readyState==4)
-      {
-        if (xmlHttp.responseText!="") {
-          eval(xmlHttp.responseText);
-          showdx(b);
-        }
-      }
+      dx(marker.f, marker.m, marker.t);
     }
-  var url="/~~fetchdx?min="+(bi[b].effcenterfreq-bi[b].effsamplerate/2)+"&max="+(bi[b].effcenterfreq+bi[b].effsamplerate/2);
-  xmlHttp.open("GET",url,true);
-  xmlHttp.send(null);
+  }
+  showdx(b);
 }
-
 
 function setscaleimgs(b,id)
 {
