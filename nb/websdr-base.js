@@ -69,7 +69,7 @@ var passbandobjstart=0;    // position (in pixels) of start of passband on frequ
 var passbandobjwidth=0;    // width of passband in pixels
 var centerfreq=bandinfo[band].centerfreq;
 
-var user_id = '';
+var user_id = 'a';
 
 function debug(a)
 {
