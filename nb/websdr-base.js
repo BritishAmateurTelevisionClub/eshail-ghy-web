@@ -264,22 +264,22 @@ const band_markers = [
     f: 10489550.000, m: "cw", t: " Lower Beacon"
   },
   {
-    f: 10489555.000, m: "usb", t: " CW ->"
+    f: 10489555.000, m: "usb", t: " CW 🡒"
   },
   {
-    f: 10489600.000, m: "usb", t: " NB Digi ->"
+    f: 10489600.000, m: "usb", t: " NB Digi 🡒"
   },
   {
-    f: 10489620.000, m: "usb", t: " Digi ->"
+    f: 10489620.000, m: "usb", t: " Digi 🡒"
   },
   {
-    f: 10489640.000, m: "usb", t: " Mixed ->"
+    f: 10489640.000, m: "usb", t: " Mixed 🡒"
   },
   {
-    f: 10489690.000, m: "usb", t: " SSB ->"
+    f: 10489690.000, m: "usb", t: " SSB 🡒"
   },
   {
-    f: 10489795.000, m: "usb", t: " Guard Band ->"
+    f: 10489795.000, m: "usb", t: " Guard Band 🡒"
   },
   {
     f: 10489798.250, m: "usb", t: " Upper Beacon"
