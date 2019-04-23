@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>QO-100 Dish Pointing</title>
+    <meta name="description" content="BATC & AMSAT-UK Qatar-OSCAR 100 (Es'hail-2) Dish Pointing Calculator">
+    <meta name="author" content="BATC & AMSAT-UK">
+    <link rel="icon" href="/favicon.ico">
+    <link href="/lib/bootstrap-4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,"Noto Sans",sans-serif;
+        margin-left: 25px;
+        margin-right: 25px;
+      }
+      #logo-row {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        height: 75px;
+      }
+      #logo-row > div {
+        height: 100%;
+        padding-left: 0px;
+        padding-right: 0px;
+        vertical-align: middle;
+      }
+      .logo {
+        max-height: 100%;
+        max-width: 85%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #map {
+        height: 500px;
+        margin: 0;
+        padding: 0;
+      }
+      #page-status {
+        font-style: italic;
+      }
+    </style>
+    <script src="/lib/jquery-3.4.0.min.js"></script>
+    <script src="/lib/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+    <script src="/lib/orbits-1.2.1.js"></script>
+    <script src="/lib/wmm-1.0.js"></script>
+    <script src="/lib/qra-1.0.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDFi5ZzuDE6gow8ugzf56IPwSrUNE-pNo&callback=initMap" async defer></script>
+  </head>
+  <body class="bg-light">
+    <div id="logo-row" class="row">
+      <div class="col">
+        <a href="https://batc.org.uk/" target="_blank">
+          <img class="logo" src="/img/batc-logo-150px.png" alt="British Amateur Television Club">
+        </a>
+      </div>
+      <div class="col">
+        <a href="https://amsat-uk.org/" target="_blank">
+          <img class="logo" src="/img/amsatuk-logo-150px.png" alt="Amateur Satellites - United Kingdom">
+        </a>
+      </div>
+      <div class="col">
+        <a href="https://amsat-dl.org/" target="_blank">
+          <img class="logo" src="/img/amsatdl-logo-150px.png" alt="Amateur Satellites - Deutschland">
+        </a>
+      </div>
+      <div class="col">
+        <a href="https://www.qsl.net/a71a/" target="_blank">
+          <img class="logo" src="/img/qars-logo-150px.png" alt="Qatar Amateur Radio Society">
+        </a>
+      </div>
+      <div class="col">
+        <a href="https://www.goonhilly.org/" target="_blank">
+          <img class="logo" src="/img/goonhilly-logo.png" alt="Goonhilly Earth Station">
+        </a>
+      </div>
+    </div>
+    <div id="map-row" class="row">
+      <div class="col-md-4">
+        <h3>Es'hail-2 (QO-100) Dish Pointing</h3>
+        Click on the map or drag the marker to your station location.
+        <p>
+          <div id="page-status">Loading..</div>
+        </p>
+        <h4>Ground Station Location</h4>
+        <ul>
+          <li>Latitude: <span id="gs-lat"></span></li>
+          <li>Longitude: <span id="gs-lon"></span></li>
+          <li>Locator: <span id="gs-qra"></span></li>
+        </ul>
+        <h4>Pointing</h4>
+        <ul>
+          <li>Azimuth: <span id="point-az"></span></li>
+          <li>Elevation: <span id="point-el"></span></li>
+          <li>LNB Skew: <span id="point-skew"></span></li>
+        </ul>
+      </div>
+      <div class="col-md-8">
+        <div id="map"></div>
+      </div>
+    </div>
+    <script>
+      // Main map object
+      var map;
+      var map_loaded = false;
+      // Satellite Location Marker
+      var eshail_orbit;
+      var eshail_position;
+      var eshail_loaded = false;
+      var eshail_marker;
+      // User Location Marker
+      var user_marker;
+      var user_marker_position;
+      var user_view_line;
+
+      var wmm = new WorldMagneticModel();
+      var wmmDateObj = new Date();
+      var wmmDate = wmmDateObj.getFullYear() + ((wmmDateObj.getMonth() + 1)/12.0);  
+
+      var init_latLng;
+      const doha_latLng = {lat: 25.7796995, lng: 51.205907, alt: 0};
+
+      var init_zoom;
+      const doha_zoom = 3;
+
+      var init_zoom_latLng;
+      const doha_zoom_latLng = {lat: 19.6585686, lng: 10.2596922};
+
+      // Try to load from browser storage if supported
+      var storageSupport = false;
+      if (typeof(Storage) !== "undefined"
+        && localStorage.pointLat
+        && localStorage.pointLng
+        && localStorage.pointZoom
+        && localStorage.pointZoomLat
+        && localStorage.pointZoomLng)
+      {
+        storageSupport = true;
+        init_latLng = {lat: parseFloat(localStorage.pointLat), lng: parseFloat(localStorage.pointLng), alt: 0};
+        init_zoom = parseInt(localStorage.pointZoom);
+        init_zoom_latLng = {lat: parseFloat(localStorage.pointZoomLat), lng: parseFloat(localStorage.pointZoomLng)};
+      }
+      else
+      {
+        init_latLng = doha_latLng;
+        init_zoom = doha_zoom;
+        init_zoom_latLng = doha_zoom_latLng;
+      }
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: init_zoom_latLng,
+          zoom: init_zoom,
+          streetViewControl: false
+        });
+
+        if(storageSupport)
+        {
+          map.addListener('center_changed', function()
+          {
+            localStorage.pointZoomLat = map.getCenter().lat();
+            localStorage.pointZoomLng = map.getCenter().lng();
+          });
+
+          map.addListener('zoom_changed', function()
+          {
+            localStorage.pointZoom = map.getZoom();
+          });
+        }
+
+        user_marker = new google.maps.Marker({
+          position: init_latLng,
+          draggable: true,
+          map: map
+        });
+        user_marker_position = init_latLng;
+        updateGroundStation(init_latLng);
+
+        google.maps.event.addListener(map, 'click', function(event)
+        {
+          user_marker.setPosition(event.latLng);
+          user_marker_position = {lat: event.latLng.lat(), lng: event.latLng.lng(), alt: 0};
+          updateGroundStation();
+          updatePointing();
+        });
+
+        user_marker.addListener('drag', function(event)
+        {
+          user_marker.setPosition(event.latLng);
+          user_marker_position = {lat: event.latLng.lat(), lng: event.latLng.lng(), alt: 0};
+          updateGroundStation();
+          updatePointing();
+        });
+
+        user_marker.addListener('dragend', function(event)
+        {
+          user_marker.setPosition(event.latLng);
+          user_marker_position = {lat: event.latLng.lat(), lng: event.latLng.lng(), alt: 0};
+          updateGroundStation();
+          updatePointing();
+        });
+
+        if(eshail_loaded)
+        {
+          renderSatellite();
+          updatePointing();
+        }
+        else
+        {
+          map_loaded = true;
+        }
+      }
+
+      function updateGroundStation()
+      {
+        $("#gs-lat").text((Math.round(user_marker_position.lat*10000)/10000).toFixed(4)+"°");
+        $("#gs-lon").text((Math.round(user_marker_position.lng*10000)/10000).toFixed(4)+"°");
+        $("#gs-qra").text(CoordToLoc(user_marker_position.lat, user_marker_position.lng));
+      }
+
+      function updatePointing()
+      {
+        if(user_view_line == null)
+        {
+          user_view_line = new google.maps.Polyline({
+            map: map,
+            path: [
+              user_marker_position,
+              eshail_position
+            ],
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+        }
+        else
+        {
+          user_view_line.setPath([
+            user_marker_position,
+            eshail_position
+          ]);
+        }
+
+        const mag_dev = wmm.declination(0, user_marker_position.lat, user_marker_position.lng, wmmDate);
+        const point_azimuth = relativeAzimuth(
+          [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
+          [eshail_position.lat, eshail_position.lng], eshail_position.alt
+        );
+        $("#point-az").text((Math.round(point_azimuth*10)/10).toFixed(1)+"°"
+          +" ("+(Math.round((point_azimuth-mag_dev)*10)/10).toFixed(1)+"° mag.)"
+        );
+        $("#point-el").text((Math.round(relativeElevation(
+          [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
+          [eshail_position.lat, eshail_position.lng], eshail_position.alt
+          )*10)/10).toFixed(1)+"°"
+        );
+        $("#point-skew").text((Math.round(skew(
+          user_marker_position,
+          eshail_position.lng
+          )*10)/10).toFixed(1)+"°"
+        );
+
+        // Save updated user position to browser storage
+        if(storageSupport)
+        {
+          localStorage.pointLat = user_marker_position.lat;
+          localStorage.pointLng = user_marker_position.lng;
+        }
+      }
+
+      function renderSatellite()
+      {
+        eshail_marker = new google.maps.Marker({
+          icon: {
+            url: '/img/satellite.png',
+            scaledSize: new google.maps.Size(32, 32),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(16, 16)
+          },
+          position: eshail_position,
+          map: map
+          });
+      }
+            
+      $(function() {
+        
+      });
+
+
+      function loadTLE()
+      {
+        $.ajax({
+          url:      "/eshail.txt",
+          type:     'GET',
+          cache:    false
+        }).done(function(data, status, xhr)
+        {
+          var stations = orbits.util.parseTLE(data);
+          for(var i = 0; i < stations.length; i++)
+          {
+            if(stations[i].name == "0 ES'HAIL 2")
+            {
+              var satOpts = {
+                tle: stations[i],
+                pathLength: 1,
+              };
+              
+              eshail_orbit = new orbits.Satellite(satOpts);  
+              eshail_orbit.refresh();
+              eshail_position = {
+                lat: eshail_orbit.orbit.getPosition()[0],
+                lng: eshail_orbit.orbit.getPosition()[1],
+                alt: eshail_orbit.orbit.getAltitude()*1000 // meters
+              };
+
+              $("#page-status").text("Ready (loaded TLE: "+eshail_orbit.tle.epoch_year+"."+Math.floor(eshail_orbit.tle.epoch_day)+")");
+
+              if(map_loaded)
+              {
+                renderSatellite();
+                updatePointing();
+              }
+              else
+              {
+                eshail_loaded = true;
+              }
+            }
+          }
+        }).fail(function(error)
+        {
+          $("#textarea-tle").val("Error loading TLE from server.");
+          console.log("TLE Error", error);
+          loadTLE();
+        });
+      }
+
+      function skew(gs_latLng, sat_lng)
+      {
+        return -57.29578 * Math.atan((Math.sin((sat_lng - gs_latLng.lng) / 57.29578)) / Math.tan(gs_latLng.lat / 57.29578));
+      }
+
+      loadTLE();
+    </script>
+    <hr>
+    <footer class="my-4 pt-1 text-muted text-center text-small">
+      <p class="mb-1">&copy; 2019 Oscar-100 Web Receiver Project, provided by BATC and AMSAT-UK, hosted by Goonhilly Earth Station.</p>
+    </footer>
+  </body>
+</html>
