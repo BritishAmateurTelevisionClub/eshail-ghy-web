@@ -1157,6 +1157,7 @@ function html5orjavamenu()
 }
 
 
+var audioPageStart = true
 var audioContextRunning = false;
 var audioContextTimer = null;
 function checkAudioContextState()
@@ -1164,19 +1165,21 @@ function checkAudioContextState()
   if(document['ct'])
   {
     document.getElementById("soundcontext").textContent = "HTML5 AudioContext State: " + document['ct'].state;
-    if(audioContextRunning && document['ct'].state == 'suspended')
+    if((audioContextRunning || audioPageStart) && document['ct'].state == 'suspended')
     {
       document.getElementById('html5-sound-status').classList.remove('html5-status-ok');
       document.getElementById('html5-sound-status').classList.add('html5-status-warning');
-      document.getElementById('autoplay-start').style.display = 'inline';
+      document.getElementById('autoplay-start').style.display = "inline";
       audioContextRunning = false;
+      audioPageStart = false;
     }
-    else if(!audioContextRunning && document['ct'].state != 'suspended')
+    else if((!audioContextRunning || audioPageStart) && document['ct'].state != 'suspended')
     {
       document.getElementById('autoplay-start').style.display = "none";
       document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
       document.getElementById('html5-sound-status').classList.add('html5-status-ok');
       audioContextRunning = true;
+      audioPageStart = false;
     }
   }
   if(audioContextTimer != null)
