@@ -586,6 +586,44 @@
         }
       }
 
+
+      function is_overpower(beacon_strength, signal_strength, signal_bw)
+      {
+        const scale_db = 3276.8;
+
+        if(beacon_strength != 0)
+        {
+          if(signal_bw < 0.06) // < 66KS
+          {
+            return false;
+          }
+
+          if(signal_bw < 0.388) // < 500KS
+          {
+            if(signal_strength > (beacon_strength + (1.0 * scale_db)))
+            {
+              return true;
+            }
+            return false;
+          }
+
+          if(signal_bw < 1.20) // < 1.5MS
+          {
+            if(signal_strength > (beacon_strength + (0.25 * scale_db)))
+            {
+              return true;
+            }
+            return false;
+          }
+          
+          if(signal_strength > beacon_strength) // >= 1.5MS
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+
       function detect_signals(fft_data)
       {
         var i;
@@ -602,7 +640,8 @@
         var signal_bw;
         var signal_freq;
 
-        var start_height = canvasHeight*(7/8);
+        var beacon_strength = 0;
+
         var text_x_position;
 
         for(i=2;i<fft_data.length;i++)
@@ -690,8 +729,19 @@
               signal_bw = align_symbolrate((end_signal - start_signal) * (8.0 / fft_data.length));
               signal_freq = 491 + (((mid_signal+1) / fft_data.length) * 8.0);
 
+              // Exclude signals in beacon band
+              if(signal_freq < 492.6)
+              {
+                if(signal_bw > 1.2)
+                {
+                  // Probably the Beacon!
+                  beacon_strength = strength_signal;
+                }
+                continue;
+              }
+
               /* Sanity check bandwidth, and exclude beacon */
-              if(signal_bw != 0 && signal_freq > 492.6)
+              if(signal_bw != 0)
               {
                 text_x_position = (mid_signal/fft_data.length)*canvasWidth;
 
@@ -711,6 +761,14 @@
                   text_x_position,
                   canvasHeight-((strength_signal/65536) * canvasHeight) - 16
                 );
+                if(is_overpower(beacon_strength, strength_signal, signal_bw))
+                {
+                  ctx.fillText(
+                    "[over-power]",
+                    text_x_position,
+                    canvasHeight-((strength_signal/65536) * canvasHeight) + 4
+                  );
+                }
 
                 ctx.restore();
               }
