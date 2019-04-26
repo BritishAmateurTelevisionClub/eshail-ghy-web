@@ -688,7 +688,7 @@
               mid_signal = start_signal + ((end_signal - start_signal)/2.0);
 
               signal_bw = align_symbolrate((end_signal - start_signal) * (8.0 / fft_data.length));
-              signal_freq = 491 + ((mid_signal / fft_data.length) * 8.0);
+              signal_freq = 491 + (((mid_signal+1) / fft_data.length) * 8.0);
 
               /* Sanity check bandwidth, and exclude beacon */
               if(signal_bw != 0 && signal_freq > 492.6)
