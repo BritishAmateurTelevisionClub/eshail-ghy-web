@@ -345,7 +345,10 @@ function zoomchange(id,zoom,start)
          }
       }
    }
-   douu();
+   if(uu_freqs.length != 0)
+   {
+    douu();
+   }
 }
 
 
@@ -917,10 +920,7 @@ function douu()
      s+="</div>";
    }
    usersobj.innerHTML=s;
-   if(total > 0)
-   {
-    numusersobj.innerHTML=total;
-   }
+   numusersobj.innerHTML=total;
 }
 
 
