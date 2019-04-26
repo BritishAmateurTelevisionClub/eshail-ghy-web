@@ -345,6 +345,7 @@ function zoomchange(id,zoom,start)
          }
       }
    }
+   douu();
 }
 
 
@@ -892,15 +893,28 @@ function douu()
 {
    s='';
    total=0;
-   for (b=0;b<nbands;b++) {
+   for (b=0;b<nbands;b++)
+   {
+     band_fraction_start = bi[b].start / 32768.0;
+     band_fraction_end = band_fraction_start + (1/(1 << bi[b].zoom));
+     band_fraction_scale = (1 << bi[b].zoom);
+
      s+="<div align='left' style='width:1024px;height:15px;position:relative; background-color:black;'>";
-     for (i=0;i<uu_names.length;i++) if (uu_bands[i]==b && uu_names[i]!="") {
-        s+="<div id='user"+i+"' style='position:absolute;top:1px;left:"+
-             (uu_freqs[i]*1024)
+     for (i=0;i<uu_names.length;i++)
+     {
+       if (uu_bands[i]==b && uu_names[i]!="")
+       {
+         total++;
+         // Check within zoomed band
+         if(uu_freqs[i] > band_fraction_start && uu_freqs[i] < band_fraction_end)
+         {
+           s+="<div id='user"+i+"' style='position:absolute;top:1px;left:"+
+             ((uu_freqs[i] - band_fraction_start)*band_fraction_scale*1024)
              +"px;width:1px;height:13px; background-color:"+others_colours[i%8]+";'></div>";
-        total++;
+         }
+       }
      }
-     s+="</div><div><img src="+bi[b].scaleimgs[0][0]+"></div>";
+     s+="</div>";
    }
    usersobj.innerHTML=s;
    numusersobj.innerHTML=total;
