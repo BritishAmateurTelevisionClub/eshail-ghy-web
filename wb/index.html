@@ -576,13 +576,13 @@
 
       function print_frequency(freq,symrate)
       {
-        if(symrate < 1.5)
+        if(symrate < 0.7)
         {
-          return "'"+Math.round(freq*1000)/1000.0;
+          return "'"+(Math.round(freq*80)/80.0).toFixed(3);
         }
         else
         {
-          return "'"+Math.round(freq*10)/10.0;
+          return "'"+(Math.round(freq*40)/40.0).toFixed(3);
         }
       }
 
