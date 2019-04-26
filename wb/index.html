@@ -548,13 +548,17 @@
         {
           return 0.500;
         }
-        else if(width > 1.6)
+        else if(width < 1.2)
         {
-          return Math.round(width*5)/5.0;
+          return 1.000;
+        }
+        else if(width < 1.6)
+        {
+          return 1.500;
         }
         else
         {
-          return width;
+          return Math.round(width*5)/5.0;
         }
       }
 
@@ -626,22 +630,31 @@
                 acc = acc + fft_data[j];
                 acc_i = acc_i + 1;
               }
-              strength_signal = acc / acc_i;
-              
-              /* 
+              /*
               ctx.save();
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight-((signal_threshold/65536) * canvasHeight));
-                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight-((signal_threshold/65536) * canvasHeight));
+                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (signal_threshold/65536)));
+                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (signal_threshold/65536)));
                 ctx.stroke();
               ctx.restore();
               */
-              
+
+              strength_signal = acc / acc_i;
+              /*
+              ctx.save();
+                ctx.lineWidth=1;
+                ctx.strokeStyle = 'white';
+                ctx.beginPath();
+                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (strength_signal/65536)));
+                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (strength_signal/65536)));
+                ctx.stroke();
+              ctx.restore();
+              */
 
               /* Find real start of top of signal */
-              for(j = start_signal; (fft_data[j] - noise_level) < 0.8*(strength_signal - noise_level); j++)
+              for(j = start_signal; (fft_data[j] - noise_level) < 0.75*(strength_signal - noise_level); j++)
               {
                 start_signal = j;
               }
@@ -650,14 +663,14 @@
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) + 20);
-                ctx.lineTo((start_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) - 20);
+                ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (strength_signal/65536)));
+                ctx.lineTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (strength_signal/65536)) + 20);
                 ctx.stroke();
               ctx.restore();
               */
 
               /* Find real end of the top of signal */
-              for(j = end_signal; (fft_data[j] - noise_level) < 0.8*(strength_signal - noise_level); j--)
+              for(j = end_signal; (fft_data[j] - noise_level) < 0.75*(strength_signal - noise_level); j--)
               {
                 end_signal = j;
               }
@@ -666,8 +679,8 @@
                 ctx.lineWidth=1;
                 ctx.strokeStyle = 'white';
                 ctx.beginPath();
-                ctx.moveTo((end_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) + 20);
-                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, ((strength_signal*start_height)/1000) - 20);
+                ctx.moveTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (strength_signal/65536)));
+                ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - (strength_signal/65536)) + 20);
                 ctx.stroke();
               ctx.restore();
               */
