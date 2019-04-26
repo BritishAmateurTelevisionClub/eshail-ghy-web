@@ -440,14 +440,4 @@
     }
     setTimeout(ping, ping_interval);
   </script>
-  <script>
-    setInterval(function()
-    {
-      if(document['ct'])
-      {
-        document.getElementById("soundcontext").textContent = "HTML5 AudioContext State: " + document['ct'].state;
-      }
-    },
-    200);
-  </script>
 </html>

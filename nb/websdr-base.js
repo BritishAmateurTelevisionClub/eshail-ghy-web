@@ -1131,16 +1131,7 @@ function html5orjavamenu()
 
    if ((sup_socket && sup_webaudio) || (sup_socket && sup_mozaudio))
    {
-    if(document['ct'].state != 'suspended')
-     {
-      document.getElementById('html5-sound-status').classList.add('html5-status-ok');
-     }
-     else
-     {
-      document.getElementById('html5-sound-status').classList.add('html5-status-warning');
-      document.getElementById('autoplay-start').style.display = 'inline';
-
-     }
+    checkAudioContextState();
    }
    else
    {
@@ -1148,6 +1139,36 @@ function html5orjavamenu()
    }
 
    document.getElementById("html5warning").style.display= (!sup_webaudio && !sup_mozaudio) ? "block" : "none";
+}
+
+
+var audioContextRunning = true;
+var audioContextTimer = null;
+function checkAudioContextState()
+{
+  if(document['ct'])
+  {
+    document.getElementById("soundcontext").textContent = "HTML5 AudioContext State: " + document['ct'].state;
+    if(audioContextRunning && document['ct'].state == 'suspended')
+    {
+      document.getElementById('html5-sound-status').classList.remove('html5-status-ok');
+      document.getElementById('html5-sound-status').classList.add('html5-status-warning');
+      document.getElementById('autoplay-start').style.display = 'inline';
+      audioContextRunning = false;
+    }
+    else if(!audioContextRunning && document['ct'].state != 'suspended')
+    {
+      document.getElementById('autoplay-start').style.display = "none";
+      document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
+      document.getElementById('html5-sound-status').classList.add('html5-status-ok');
+      audioContextRunning = true;
+    }
+  }
+  if(audioContextTimer != null)
+  {
+    clearTimeout(audioContextTimer);
+  }
+  audioContextTimer = setTimeout(checkAudioContextState, 100);
 }
 
 function start_audio()
@@ -1164,21 +1185,7 @@ function start_audio()
   {
     document['ct'].resume();
   }
-
-  setTimeout(function() {
-    if(document['ct'].state != 'suspended')
-    {
-      document.getElementById('autoplay-start').style.display = "none";
-      document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
-      document.getElementById('html5-sound-status').classList.add('html5-status-ok');
-    }
-    else
-    {
-      document.getElementById('html5-sound-status').classList.remove('html5-status-warning');
-      document.getElementById('html5-sound-status').classList.add('html5-status-error');
-      alert("Audio playback doesn't appear to be working, please refresh or contact project team if the problem persists.");
-    }
-  }, 50);
+  checkAudioContextState();
 }
 
 function bodyonload()
