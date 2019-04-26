@@ -1131,6 +1131,7 @@ function html5orjavamenu()
 
    if ((sup_socket && sup_webaudio) || (sup_socket && sup_mozaudio))
    {
+    document.getElementById('html5-sound-status').classList.add('html5-status-warning');
     checkAudioContextState();
    }
    else
@@ -1142,7 +1143,7 @@ function html5orjavamenu()
 }
 
 
-var audioContextRunning = true;
+var audioContextRunning = false;
 var audioContextTimer = null;
 function checkAudioContextState()
 {
