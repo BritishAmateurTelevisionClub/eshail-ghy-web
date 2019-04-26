@@ -917,7 +917,10 @@ function douu()
      s+="</div>";
    }
    usersobj.innerHTML=s;
-   numusersobj.innerHTML=total;
+   if(total > 0)
+   {
+    numusersobj.innerHTML=total;
+   }
 }
 
 
