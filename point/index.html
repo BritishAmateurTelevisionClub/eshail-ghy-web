@@ -52,6 +52,12 @@
         display: none;
         font-weight: bold;
       }
+      #point-el-offset-li {
+        display: none;
+      }
+      #point-el-offset {
+        font-weight: bold;
+      }
     </style>
     <script src="/lib/jquery-3.4.0.min.js"></script>
     <script src="/lib/bootstrap-4.3.1/js/bootstrap.min.js"></script>
@@ -104,7 +110,10 @@
         <h4>Pointing</h4>
         <ul>
           <li>Azimuth: <span id="point-az"></span></li>
-          <li>Elevation: <span id="point-el"></span></li>
+          <li>Elevation: <span id="point-el"></span>
+            <ul id="point-el-offset-li">
+              <li>Device tilt offset: <span id="point-el-offset"></span></li>
+            </ul>
           <li>LNB Skew: <span id="point-skew"></span></li>
         </ul>
       </div>
@@ -249,6 +258,7 @@
 
       var span_point_az = $("#point-az");
       var span_point_el = $("#point-el");
+      var point_elevation = 0;
       var span_point_sk = $("#point-skew");
       var el_occluded = false;
       function updatePointing()
@@ -280,7 +290,7 @@
           [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
           [eshail_position.lat, eshail_position.lng], eshail_position.alt
         );
-        const point_elevation = relativeElevation(
+        point_elevation = relativeElevation(
           [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
           [eshail_position.lat, eshail_position.lng], eshail_position.alt
         );
@@ -384,6 +394,40 @@
 
       loadTLE();
 
+      function copysign( x, y )
+      {
+        if(y > 0)
+        {
+          return x;
+        }
+        else
+        {
+          return -1.0*x;
+        }
+      }
+
+      function quaternion_to_euler(q)
+      {
+        // roll (x-axis rotation)
+        sinr_cosp = +2.0 * (q[0] * q[1] + q[2] * q[3]);
+        cosr_cosp = +1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]);
+        roll = Math.atan2(sinr_cosp, cosr_cosp);
+
+        // pitch (y-axis rotation)
+        sinp = +2.0 * (q[0] * q[2] - q[3] * q[1]);
+        if (Math.abs(sinp) >= 1)
+          pitch = copysign(Math.PI / 2, sinp); // use 90 degrees if out of range
+        else
+          pitch = Math.asin(sinp);
+
+        // yaw (z-axis rotation)
+        siny_cosp = +2.0 * (q[0] * q[3] + q[1] * q[2]);
+        cosy_cosp = +1.0 - 2.0 * (q[2] * q[2] + q[3] * q[3]);  
+        yaw = Math.atan2(siny_cosp, cosy_cosp);
+
+        return [roll*(180/Math.PI), pitch*(180/Math.PI), yaw*(180/Math.PI)];
+      }
+
       $(function()
       {
         var mobile = false;
@@ -413,15 +457,56 @@
                 map.setCenter(user_marker_position);
                 map.setZoom(18);
               },
-              function()
+              function(err)
               {
-                console.log('Unknown error.');
+                if(err.message == "")
+                {
+                  alert("Device Error: Location unavailable.");
+                }
+                else
+                {
+                  alert("Device Error: "+err.message);
+                }
+                //console.log(err);
               }
             );
 
           });
 
           $("#mobile-location").show();
+          
+          var span_point_el_offset = $("#point-el-offset");
+          const sensorAbs = new AbsoluteOrientationSensor();
+          sensorAbs.onactivate = function()
+          {
+            $("#point-el-offset-li").show();
+          };
+          sensorAbs.onreading = function()
+          {
+            //console.log(sensorAbs);
+            var el_offset = (180-quaternion_to_euler(sensorAbs.quaternion)[2]) - point_elevation;
+            if(el_offset > 180)
+            {
+              el_offset = el_offset - 360;
+            }
+            var sign_char = "";
+            if(el_offset >= 0)
+            {
+              sign_char = "+";
+            }
+            span_point_el_offset.text(sign_char+(Math.round(el_offset*10)/10).toFixed(1)+"°");
+          };
+          
+          Promise.all([navigator.permissions.query({ name: "accelerometer" }),
+                   navigator.permissions.query({ name: "magnetometer" }),
+                   navigator.permissions.query({ name: "gyroscope" })])
+            .then(results => {
+               if (results.every(result => result.state === "granted")) {
+                 sensorAbs.start();
+               } else {
+                 console.log("No permissions to use AbsoluteOrientationSensor.");
+               }
+          });
         }
       });
     </script>
