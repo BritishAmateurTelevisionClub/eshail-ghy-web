@@ -48,6 +48,10 @@
       .el-occluded {
         color: red;
       }
+      #mobile-location {
+        display: none;
+        font-weight: bold;
+      }
     </style>
     <script src="/lib/jquery-3.4.0.min.js"></script>
     <script src="/lib/bootstrap-4.3.1/js/bootstrap.min.js"></script>
@@ -95,6 +99,7 @@
           <li>Latitude: <span id="gs-lat"></span></li>
           <li>Longitude: <span id="gs-lon"></span></li>
           <li>Locator: <span id="gs-qra"></span></li>
+          <li id="mobile-location"><a href="" id="mobile-location-link">Use my GPS location</a></li>
         </ul>
         <h4>Pointing</h4>
         <ul>
@@ -323,10 +328,6 @@
           map: map
           });
       }
-            
-      $(function() {
-        
-      });
 
       var span_page_status = $("#page-status");
       function loadTLE()
@@ -382,6 +383,47 @@
       }
 
       loadTLE();
+
+      $(function()
+      {
+        var mobile = false;
+        const n = navigator.userAgent.toLowerCase();
+
+        if(navigator.geolocation
+          && (n.indexOf('iphone')!=-1
+            || n.indexOf('ipod')!=-1
+            || n.indexOf('ios')!=-1
+            || n.indexOf('android')!=-1
+          )
+        )
+        {
+          $("#mobile-location-link").click(function(event)
+          {
+            event.preventDefault();
+            navigator.geolocation.getCurrentPosition(function(position)
+              {
+                user_marker_position = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                  alt: position.coords.altitude
+                };
+                user_marker.setPosition(user_marker_position);
+                updateGroundStation();
+                updatePointing();
+                map.setCenter(user_marker_position);
+                map.setZoom(18);
+              },
+              function()
+              {
+                console.log('Unknown error.');
+              }
+            );
+
+          });
+
+          $("#mobile-location").show();
+        }
+      });
     </script>
     <hr>
     <footer class="my-4 pt-1 text-muted text-center text-small">
