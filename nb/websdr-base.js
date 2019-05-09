@@ -428,40 +428,30 @@ function set_mode(m)      // ...with appropriate filter
         document.getElementById("btn-CW").classList.remove('btn-selected');
         document.getElementById("btn-LSB").classList.remove('btn-selected');
         document.getElementById("btn-USB").classList.add('btn-selected');
-        document.getElementById("btn-AM").classList.remove('btn-selected');
-        document.getElementById("btn-FM").classList.remove('btn-selected');
         break;
       case "LSB":
         setmf("lsb", -3.0, -0.3);
         document.getElementById("btn-CW").classList.remove('btn-selected');
         document.getElementById("btn-LSB").classList.add('btn-selected');
         document.getElementById("btn-USB").classList.remove('btn-selected');
-        document.getElementById("btn-AM").classList.remove('btn-selected');
-        document.getElementById("btn-FM").classList.remove('btn-selected');
         break;
       case "AM":
         setmf("am", -4,  4);
         document.getElementById("btn-CW").classList.remove('btn-selected');
         document.getElementById("btn-LSB").classList.remove('btn-selected');
         document.getElementById("btn-USB").classList.remove('btn-selected');
-        document.getElementById("btn-AM").classList.add('btn-selected');
-        document.getElementById("btn-FM").classList.remove('btn-selected');
         break;
       case "CW":
         setmf("cw", -0.95,  -0.55);
         document.getElementById("btn-CW").classList.add('btn-selected');
         document.getElementById("btn-LSB").classList.remove('btn-selected');
         document.getElementById("btn-USB").classList.remove('btn-selected');
-        document.getElementById("btn-AM").classList.remove('btn-selected');
-        document.getElementById("btn-FM").classList.remove('btn-selected');
         break;
       case "FM":
         setmf("fm", -8,  8);
         document.getElementById("btn-CW").classList.remove('btn-selected');
         document.getElementById("btn-LSB").classList.remove('btn-selected');
         document.getElementById("btn-USB").classList.remove('btn-selected');
-        document.getElementById("btn-AM").classList.remove('btn-selected');
-        document.getElementById("btn-FM").classList.add('btn-selected');
         break;
    }
 }
