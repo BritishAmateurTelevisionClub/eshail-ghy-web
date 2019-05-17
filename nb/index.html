@@ -142,11 +142,14 @@
         height: 500px;
         width: 100%;
       }
+      #cookie_warning {
+        display: none;
+      }
     </style>
     <script src="/lib/jquery-3.4.0.min.js"></script>
     <script src="/lib/bootstrap-4.3.1/js/bootstrap.min.js"></script>
     <script src="tmp/bandinfo.js"></script>
-    <script src="websdr-base.js?v=1"></script>
+    <script src="websdr-base.js?v=2"></script>
   </head>
   <body class="bg-light" onload=bodyonload()>
     <div id="logo-row" class="row">
@@ -208,6 +211,10 @@
         It seems you are using a mobile device; click here to switch to the mobile version of this site.
       </div>
     </a>
+
+    <div id="cookie_warning" class="warning">
+      Your browser is trying to send too many cookies, this doesn't work with the websdr application. <a id="clear-cookie-link" href="">Please click here to clear your cookies and refresh the page</a> (Warning: will log you out of all BATC websites)
+    </div>
 
     <div id="html5warning" class="warning">
       Your browser does not seem to support HTML5 WebAudio; please try a recent version of Firefox, Chrome, Opera or Safari.

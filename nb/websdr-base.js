@@ -4,6 +4,58 @@
 // Naturally, distributing this file by the original WebSDR server software to original WebSDR clients is permitted.
 
 
+// Detect failure to load bandinfo.js
+if(typeof bandinfo == 'undefined')
+{
+  var bandinfo_request = new XMLHttpRequest();
+  bandinfo_request.open('GET', '/nb/tmp/bandinfo.js');
+
+  bandinfo_request.onreadystatechange = function()
+  {
+    if(this.readyState === 4)
+    {
+      console.log(this);
+      if (this.status >= 200 && this.status < 400)
+      {
+        console.log("Not the cookie error, reason unknown. HTTP: "+this.status);
+      }
+      else
+      {
+        document.getElementById("html5warning").style.display = 'none';
+        document.getElementById("html5warning").remove();
+        document.getElementById("cookie_warning").style.display = 'block';
+        cookieAddEventListener(document.getElementById("clear-cookie-link"), 'click', function()
+        {
+          event.preventDefault();
+        var cookies = document.cookie.split(";");
+        console.log(cookies);
+          for(var i = 0; i < cookies.length; i++)
+          {
+            var cookie = cookies[i];
+        console.log(cookie);
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;";
+          }
+          location.reload(true);
+        });
+      }
+    }
+  };
+  
+  bandinfo_request.send();
+  bandinfo_request = null;
+}
+function cookieAddEventListener(el, eventName, handler) {
+  if (el.addEventListener) {
+    el.addEventListener(eventName, handler);
+  } else {
+    el.attachEvent('on' + eventName, function(){
+      handler.call(el);
+    });
+  }
+}
+
 // variables governing what the user listens to:
 var lo=-2.7,hi=-0.3;   // edges of passband, in kHz w.r.t. the carrier
 var mode="LSB";            // 1 if AM, 0 otherwise (SSB/CW); or text "AM", "FM" etc
