@@ -95,6 +95,17 @@
         clear: both;
         color: #999999;
       }
+      #maintenance_warning {
+        display: block;
+        color:red;
+        border:2px;
+        border-style:solid;
+        border-color:black;
+        background-color:white;
+        margin: 8px;
+        padding: 8px;
+	width: max-content;
+      }
     </style>
     <script src="/lib/jquery-3.4.0.min.js"></script>
     <script src="/lib/bootstrap-4.3.1/js/bootstrap.min.js"></script>
@@ -910,6 +921,9 @@
       <ul>
         <li><b>New:</b> Dish Pointing Calculator & Map: <a href="https://eshail.batc.org.uk/point/" target="_blank">eshail.batc.org.uk/point/</a></li>
       </ul>
+      <div id="maintenance_warning">
+      <b>Scheduled Maintenance Window:</b> 0000 UTC Monday 3rd June - 0000 UTC Thursday 6th June. <i>The WebSDR and Spectrum Monitor may be degraded or unavailable during this time.</i>
+    </div>
     </div>
 
     <div id="content" role="main">
