@@ -250,17 +250,11 @@ function setwaterfall(b,f)
 }
 
 
-function dx(freq,mode,text)
-// called by updates fetched from the server
-{
-   dxs.push( { freq:freq, mode:mode, text:text } );
-}
-
-function setfreqm(b,f,mo)
+function setfreqm(b,f,mo,mt)
 {
    setband(b);
    set_mode(mo);
-   if (iscw()) f-=(hi+lo)/2;
+   if (mt) f-=(hi+lo)/2;
    setfreq(f);
 }
 
@@ -273,17 +267,15 @@ function showdx(b)
       for (i=0;i<mems.length;i++) mems[i].nr=i;
       mems.sort(function(a,b){return a.nomfreq-b.nomfreq});
       for (i=0;i<dxs.length;i++) {
-         var x = freq2x(dxs[i].freq,b);
+         var x = freq2x(dxs[i].f,b);
          var nextx;
          if (x>1024) break;
-         if (i<dxs.length-1) nextx=freq2x(dxs[i+1].freq,b);
+         if (i<dxs.length-1) nextx=freq2x(dxs[i+1].f,b);
          else nextx=1024;
          if (nextx>=1024) nextx=1280;
          if (x<0) continue;
-         var fr=dxs[i].freq;
-         var mo=dxs[i].mode;
          s+='<div title="" class="statinfo2" style="max-width:'+(nextx-x)+'px;left:'+(x-6)+'px;top:'+(44-scaleheight)+'px;">';
-         s+='<div class="statinfo1"><div class="statinfo0" onclick="setfreqm(b,'+fr+','+"'"+mo+"'"+');">'+dxs[i].text+'<\/div><\/div><\/div>';
+         s+='<div class="statinfo1"><div class="statinfo0" onclick="setfreqm(b,'+dxs[i].f+','+"'"+dxs[i].m+"'"+','+dxs[i].ct+');">'+dxs[i].t+'<\/div><\/div><\/div>';
          s+='<div title="" class="statinfol" style="width:1px;height:44px;position:absolute;left:'+x+'px;top:-'+scaleheight+'px;"><\/div>';
       }
       for (i=0;i<mems.length;i++) if (mems[i].band==b) {
@@ -313,28 +305,28 @@ function showdx(b)
 
 const band_markers = [
   {
-    f: 10489550.000, m: "cw", t: " Lower Beacon"
+    f: 10489550.000, m: "cw", t: " Lower Beacon", ct: true
   },
   {
-    f: 10489555.000, m: "usb", t: " CW ->"
+    f: 10489555.000, m: "cw", t: " CW ->", ct: true
   },
   {
-    f: 10489600.000, m: "usb", t: " NB Digi ->"
+    f: 10489600.000, m: "usb", t: " NB Digi ->", ct: false
   },
   {
-    f: 10489620.000, m: "usb", t: " Digi ->"
+    f: 10489620.000, m: "usb", t: " Digi ->", ct: false
   },
   {
-    f: 10489640.000, m: "usb", t: " Mixed ->"
+    f: 10489640.000, m: "usb", t: " Mixed ->", ct: false
   },
   {
-    f: 10489690.000, m: "usb", t: " SSB ->"
+    f: 10489690.000, m: "usb", t: " SSB ->", ct: false
   },
   {
-    f: 10489795.000, m: "usb", t: " Guard Band ->"
+    f: 10489795.000, m: "usb", t: " Guard Band ->", ct: false
   },
   {
-    f: 10489798.250, m: "usb", t: " Upper Beacon"
+    f: 10489800.000, m: "usb", t: " Upper Beacon", ct: true
   }
 ];
 
@@ -349,7 +341,7 @@ function fetchdx(b)
     marker = band_markers[index];
     if(marker.f > f_min && marker.f < f_max)
     {
-      dx(marker.f, marker.m, marker.t);
+      dxs.push( marker );
     }
   }
   showdx(b);
