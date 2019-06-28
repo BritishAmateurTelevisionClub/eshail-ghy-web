@@ -1341,7 +1341,7 @@ function bodyonload()
       registerTouchEvents("edgelower", touchlower, touchXYloweredge);
    }
 
-   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net?channels=%23es%27hail-2&uio=d4';
+   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net/#es\'hail-2';
 }
 
 function registerTouchEvents(id, touchStart, touchMove) {
