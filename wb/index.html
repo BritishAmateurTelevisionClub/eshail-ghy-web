@@ -747,17 +747,20 @@
                 ctx.font = "14px Arial";
                 ctx.fillStyle = "white";
                 ctx.textAlign = "center";
-                ctx.fillText(
-                  print_symbolrate(signal_bw)+", "+print_frequency(signal_freq,signal_bw),
-                  text_x_position,
-                  canvasHeight-((strength_signal/65536) * canvasHeight) - 16
-                );
-                if(is_overpower(beacon_strength, strength_signal, signal_bw))
+                if(!is_overpower(beacon_strength, strength_signal, signal_bw))
+		{
+                  ctx.fillText(
+                    print_symbolrate(signal_bw)+", "+print_frequency(signal_freq,signal_bw),
+                    text_x_position,
+                    canvasHeight-((strength_signal/65536) * canvasHeight) - 16
+                  );
+		}
+		else
                 {
                   ctx.fillText(
                     "[over-power]",
                     text_x_position,
-                    canvasHeight-((strength_signal/65536) * canvasHeight) + 4
+                    canvasHeight-((strength_signal/65536) * canvasHeight) - 16
                   );
                 }
 
