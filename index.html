@@ -59,8 +59,11 @@
       .text-center {
         text-align: center;
       }
-      .img-link-sdr {
+      #img-link-nb {
         width: 100%;
+      }
+      #img-link-wb {
+        width: 90%;
       }
     </style>
     <script src="/lib/jquery-3.4.0.min.js"></script>
@@ -126,15 +129,14 @@
         <a href="/img/eshail-footprint.jpg" target="_blank"><img id="eshail-footprint" src="/img/eshail-footprint.jpg" alt="Es'hail-2 Footprint Diagram" /></a>
       </div>
     </div>
-    
     <div class="row">
-      <a class="col-md-6" href="/nb/">
-        <h3 class="text-center">Narrowband WebSDR (CW, SSB, etc.)</h3>
-        <img class="img-link-sdr" src="/img/websdr_generic.png" alt="Narrowband WebSDR" />
+      <a class="col-md-6 mt-4 text-center" href="/nb/">
+        <h3>Narrowband WebSDR (CW, SSB, etc.)</h3>
+        <img id="img-link-nb" src="/img/screenshot_nb.png" alt="Narrowband WebSDR" />
       </a>
-      <a class="col-md-6" href="/wb/">
-        <h3 class="text-center">Wideband Spectrum Viewer (DATV)</h3>
-        <img class="img-link-sdr" src="/img/spectrum_monitor.png" alt="Wideband Spectrum Viewer" />
+      <a class="col-md-6 mt-4 text-center" href="/wb/">
+        <h3>Wideband Spectrum Viewer (DATV, etc.)</h3>
+        <img id="img-link-wb" src="/img/screenshot_wb.png" alt="Wideband Spectrum Viewer" />
       </a>
     </div>
     <hr>
