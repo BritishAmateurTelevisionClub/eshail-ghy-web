@@ -486,7 +486,7 @@ function set_mode(m)      // ...with appropriate filter
         document.getElementById("btn-USB").classList.remove('btn-selected');
         break;
       case "CW":
-        setmf("cw", -0.95,  -0.55);
+        setmf("cw", 0.95,  0.55);
         document.getElementById("btn-CW").classList.add('btn-selected');
         document.getElementById("btn-LSB").classList.remove('btn-selected');
         document.getElementById("btn-USB").classList.remove('btn-selected');
