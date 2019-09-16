@@ -63,7 +63,16 @@
       #bandplan-link {
         display: inline-block;
       }
+      #fft-colour-select {
+        padding-top: 4px;
+        padding-bottom: 5px;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
       #fullscreen-link {
+        margin-left: 3px;
+      }
+      #fullscreen-link-span {
         float: right;
       }
       #chat {
@@ -119,6 +128,19 @@
       var canvasWidth;
       var canvasHeight;
 
+      var fft_colour = 'green';
+
+      /* Load vars from local storage */
+      if(typeof(Storage) !== "undefined")
+      {
+        storageSupport = true;
+
+        if(localStorage.wb_fft_colour)
+        {
+          fft_colour = localStorage.wb_fft_colour;
+        }
+      }
+
       /* On load */
       $(function() {
         canvasHeight = 542;
@@ -146,6 +168,22 @@
         if((n.indexOf('iphone')!=-1) || (n.indexOf('ipad')!=-1) || (n.indexOf('ipod')!=-1) || (n.indexOf('ios')!=-1))
         {
           $("#fullscreen-link").hide();
+        }
+
+        /* Change colour handler */
+        $("#fft-colour-select").change(function()
+        {
+           fft_colour = $(this).children("option:selected").val();
+           if(storageSupport)
+           {
+            localStorage.wb_fft_colour = fft_colour;
+           }
+        });
+
+        /* If we loaded value from localStorage then we probably need to set the colour */
+        if(storageSupport && localStorage.wb_fft_colour)
+        {
+            $("#fft-colour-select").val(fft_colour);
         }
       });
 
@@ -396,7 +434,7 @@
           var start_height = canvasHeight*(7/8);
           var data_length = data.length;
           ctx.lineWidth=1;
-          ctx.strokeStyle = 'green';
+          ctx.strokeStyle = fft_colour;
 
           var sample;
           var sample_index;
@@ -942,7 +980,14 @@
           <div id="under-canvas">
             <span id="stats">Loading..</span>
             <span id="bandplan-link"><a href="https://wiki.batc.org.uk/Es%27hail-2_DATV_Bandplan" target="_blank">DATV Bandplan</a></span>
-            <span id="fullscreen-link"><button onclick="fft_fullscreen();">Open fullscreen</button></span>
+            <span id="fullscreen-link-span">
+                <select id="fft-colour-select">
+                    <option value="green" selected="selected">Green</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                </select>
+                <button id="fullscreen-link" onclick="fft_fullscreen();">Open fullscreen</button></span>
           </div>
         </div>
 
