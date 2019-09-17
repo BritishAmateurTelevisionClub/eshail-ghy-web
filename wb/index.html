@@ -64,10 +64,7 @@
         display: inline-block;
       }
       #fft-colour-select {
-        padding-top: 4px;
-        padding-bottom: 5px;
-        padding-left: 2px;
-        padding-right: 2px;
+        margin-left: 3px;
       }
       #fullscreen-link {
         margin-left: 3px;
@@ -115,11 +112,16 @@
     <script src="/lib/chat.js?v=2"></script>
     <script>
       const ws_url = "wss://"+window.location.hostname+"/wb/fft";
+      var ws_name = 'fft';
       var ws_sock = null;
       var ws_reconnect = null;
 
       var render_timer;
-      const render_interval = 250; // ms
+      const render_interval_map = {
+        'fft': 250, // ms
+        'fft_fast': 100 // ms
+      };
+      var render_interval = render_interval_map[ws_name];
       var render_busy = false;
       var render_buffer = [];
 
@@ -138,6 +140,12 @@
         if(localStorage.wb_fft_colour)
         {
           fft_colour = localStorage.wb_fft_colour;
+        }
+
+        if(localStorage.wb_fft_speed)
+        {
+          ws_name = localStorage.wb_fft_speed;
+          render_interval = render_interval_map[ws_name];
         }
       }
 
@@ -180,10 +188,30 @@
            }
         });
 
+        /* Change colour handler */
+        $("#fft-speed-select").change(function()
+        {
+           ws_name = $(this).children("option:selected").val();
+           render_interval = render_interval_map[ws_name];
+           clearInterval(render_timer);
+           render_timer = setInterval(render_fft, render_interval);
+           ws_sock.close();
+           if(storageSupport)
+           {
+            localStorage.wb_fft_speed = ws_name;
+           }
+        });
+
         /* If we loaded value from localStorage then we probably need to set the colour */
         if(storageSupport && localStorage.wb_fft_colour)
         {
             $("#fft-colour-select").val(fft_colour);
+        }
+
+        /* If we loaded value from localStorage then we probably need to set the fft speed */
+        if(storageSupport && localStorage.wb_fft_speed)
+        {
+            $("#fft-speed-select").val(ws_name);
         }
       });
 
@@ -477,11 +505,11 @@
         
           if (typeof MozWebSocket != "undefined")
           {
-            ws_sock = new MozWebSocket(ws_url, "fft");
+            ws_sock = new MozWebSocket(ws_url, ws_name);
           }
           else
           {
-            ws_sock = new WebSocket(ws_url, "fft");
+            ws_sock = new WebSocket(ws_url, ws_name);
           }
 
           ws_sock.binaryType = 'arraybuffer';
@@ -529,7 +557,7 @@
         }
       }
 
-      render_timer = setInterval(function()
+      function render_fft()
       {
         if(!render_busy)
         {
@@ -553,7 +581,8 @@
         {
           console.log("Slow render blocking next frame, configured interval is ", render_interval);
         }
-      }, render_interval);
+      }
+      render_timer = setInterval(render_fft, render_interval);
 
       function update_stats(num) {
         $("#stats").text("Wideband viewers: "+num);
@@ -981,6 +1010,10 @@
             <span id="stats">Loading..</span>
             <span id="bandplan-link"><a href="https://wiki.batc.org.uk/Es%27hail-2_DATV_Bandplan" target="_blank">DATV Bandplan</a></span>
             <span id="fullscreen-link-span">
+                <select id="fft-speed-select">
+                    <option value="fft" selected="selected">Normal</option>
+                    <option value="fft_fast">Fast</option>
+                </select>
                 <select id="fft-colour-select">
                     <option value="green" selected="selected">Green</option>
                     <option value="yellow">Yellow</option>
