@@ -701,6 +701,8 @@
         var strength_signal;
         var signal_bw;
         var signal_freq;
+        var acc;
+        var acc_i;
 
         var beacon_strength = 0;
 
@@ -722,10 +724,9 @@
             {
               in_signal = false;
 
-
               end_signal = i;
-              var acc = 0;
-              var acc_i = 0;
+              acc = 0;
+              acc_i = 0;
               for(j=(start_signal + (0.3*(end_signal - start_signal))) | 0; j<start_signal+(0.7*(end_signal - start_signal)); j++)
               {
                 acc = acc + fft_data[j];
@@ -848,6 +849,27 @@
             }
           }
         }
+	if(in_signal)
+	{
+	  end_signal = fft_data.length;
+	  acc = 0;
+          acc_i = 0;
+          for(j=(start_signal + (0.3*(end_signal - start_signal))) | 0; j<start_signal+(0.7*(end_signal - start_signal)); j++)
+          {
+            acc = acc + fft_data[j];
+            acc_i = acc_i + 1;
+          }
+
+          strength_signal = acc / acc_i;
+
+          ctx.save();
+	  ctx.fillText(
+            "[out-of-band]",
+            (canvasWidth - 55),
+            canvasHeight-((strength_signal/65536) * canvasHeight) - 16
+          );
+          ctx.restore();
+	}
       }
 
       function fft_fullscreen()
