@@ -403,6 +403,15 @@ function updateFFT(data)
     }
     ctx.restore();
   }
+  else
+  {
+    ctx.save();
+    ctx.font = "15px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText("Loading..",(canvasWidth/2)+(canvasWidth/35),(3*(canvasHeight/4))-((1.1/6)*canvasHeight));
+    ctx.restore();
+  }
 
   /*  Beacon Description */
   ctx.font = "15px Arial";
