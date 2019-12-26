@@ -1,7 +1,5 @@
 const ws_url = "wss://"+window.location.hostname+"/wb/fft";
 var ws_name = 'fft';
-var ws_sock = null;
-var ws_reconnect = null;
 
 var render_timer;
 const render_interval_map = {
@@ -36,6 +34,8 @@ if(typeof(Storage) !== "undefined")
   }
 }
 
+var fft_ws = new u16Websocket(ws_url, ws_name, render_buffer);
+
 /* On load */
 $(function() {
   canvasHeight = 542;
@@ -46,9 +46,6 @@ $(function() {
   initCanvas();
 
   updateFFT(null);
-
-  /* Connect to websocket feed */
-  ws_connect();
  
   var chat = new BATC_Chat({
     element: $("#chat"),
@@ -82,7 +79,7 @@ $(function() {
      render_interval = render_interval_map[ws_name];
      clearInterval(render_timer);
      render_timer = setInterval(render_fft, render_interval);
-     ws_sock.close();
+     fft_ws.changeName(ws_name);
      if(storageSupport)
      {
       localStorage.wb_fft_speed = ws_name;
@@ -412,69 +409,6 @@ function updateFFT(data)
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
   ctx.fillText("Beacon (DVB-S2, 2MS/s QPSK, 2/3)",((492.55)-491)*(canvasWidth/8),canvasHeight*(3.0/8));
-}
-
-function ws_connect()
-{
-  if("WebSocket" in window)
-  {
-    if(ws_sock != null)
-    {
-      return;
-    }
-  
-    if (typeof MozWebSocket != "undefined")
-    {
-      ws_sock = new MozWebSocket(ws_url, ws_name);
-    }
-    else
-    {
-      ws_sock = new WebSocket(ws_url, ws_name);
-    }
-
-    ws_sock.binaryType = 'arraybuffer';
-
-    ws_sock.onopen = function()
-    {
-      window.clearInterval(ws_reconnect);
-      ws_reconnect = null;
-      //console.log("Websocket Connection Opened");
-    } 
-
-    ws_sock.onmessage = function got_packet(msg)
-    {
-      try
-      {
-        parsed_fft = new Uint16Array(msg.data);
-        if(parsed_fft != null)
-        {
-          render_buffer.push(parsed_fft);
-        }
-      }
-      catch(e)
-      {
-        console.log("Error parsing binary!",e);
-      }
-    } 
-
-    ws_sock.onclose = function()
-    {
-      ws_sock.close();
-      ws_sock = null;
-      
-      if(!ws_reconnect)
-      {
-        ws_reconnect = setInterval(function()
-        {
-          ws_connect();
-        },500);
-      }
-    }
-  }
-  else
-  {
-    alert("Websockets not supported in your browser!");
-  }
 }
 
 function render_fft()
