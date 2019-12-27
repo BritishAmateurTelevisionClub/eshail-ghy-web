@@ -52,7 +52,8 @@ $(function() {
     room: 'eshail-wb',
     nick: '',
     viewers_cb: update_stats,
-    guests_allowed: true
+    guests_allowed: true,
+    focus_msgbox: false
   });
 
   /* Hide fullscreen link for iOS */
@@ -96,6 +97,12 @@ $(function() {
   if(storageSupport && localStorage.wb_fft_speed)
   {
       $("#fft-speed-select").val(ws_name);
+  }
+
+  /* If chat message box is visible, focus it */
+  if(document.getElementById('batchat-bottom-bar').getBoundingClientRect().bottom <= (window.innerHeight || document.documentElement.clientHeight))
+  {
+    document.getElementById("batchat-bottom-bar").focus();
   }
 });
 

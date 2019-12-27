@@ -7,6 +7,7 @@ $(function()
     room: 'eshail-wb',
     nick: '',
     viewers_cb: viewers_cb_null,
-    guests_allowed: true
+    guests_allowed: true,
+    focus_msgbox: true
   });
 });
