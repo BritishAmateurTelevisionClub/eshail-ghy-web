@@ -374,7 +374,7 @@ function updateFFT(data)
     var sample_index;
     var sample_index_f;
     ctx.save();
-    for(i=0; i<(canvasWidth-12); i++)
+    for(i=0; i<canvasWidth; i++)
     {
       sample_index = (i*data_length)/ canvasWidth;
       sample_index_f = sample_index | 0;
