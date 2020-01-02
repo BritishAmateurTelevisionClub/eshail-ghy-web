@@ -251,25 +251,6 @@ function updateFFT(data)
   ctx.lineWidth = 2;
   ctx.strokeStyle = 'blue';
 
-  /* Beacon & Simplex 1Ms */
-  rolloff = 0.2*1.0;
-  ctx.beginPath();
-  ctx.moveTo(((491.0+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((492.5-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((492.5+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((494.0-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  /* Beacon & Simplex 2Ms */
-  rolloff = 0.2*2.0;
-  ctx.beginPath();
-  ctx.moveTo(((491+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((494-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
-
   /* Simplex 1Ms */
   rolloff = 0.2*1.0;
   ctx.beginPath();
@@ -375,7 +356,8 @@ function updateFFT(data)
   ctx.font = "15px Arial";
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
-  ctx.fillText("DATV Beacon",((492.5)-_start_freq)*(canvasWidth/9),canvasHeight-15);
+  ctx.fillText("A71A DATV Beacon",((492.5)-_start_freq)*(canvasWidth/9),canvasHeight-42);
+  ctx.fillText("(10492.500, 2MS/s QPSK, 2/3)",((492.5)-_start_freq)*(canvasWidth/9),canvasHeight-18);
   ctx.fillText("Wide & Narrow DATV",((495.5)-_start_freq)*(canvasWidth/9),canvasHeight-15);
   ctx.fillText("Narrow DATV",((498.25)-_start_freq)*(canvasWidth/9),canvasHeight-15);
   ctx.restore();
@@ -419,12 +401,6 @@ function updateFFT(data)
     ctx.fillText("Loading..",(canvasWidth/2)+(canvasWidth/35),(3*(canvasHeight/4))-((1.1/6)*canvasHeight));
     ctx.restore();
   }
-
-  /*  Beacon Description */
-  ctx.font = "15px Arial";
-  ctx.fillStyle = "white";
-  ctx.textAlign = "center";
-  ctx.fillText("Beacon (DVB-S2, 2MS/s QPSK, 2/3)",((492.55)-491)*(canvasWidth/8),canvasHeight*(3.0/8));
 }
 
 function render_fft()
