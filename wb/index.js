@@ -1,5 +1,10 @@
-const ws_url = "wss://"+window.location.hostname+"/wb/fft";
+var ws_url = "wss://"+window.location.hostname+"/wb/fft";
 var ws_name = 'fft';
+
+if(typeof ws_url_override !== 'undefined')
+{
+  ws_url = ws_url_override;
+}
 
 var render_timer;
 const render_interval_map = {
@@ -11,9 +16,14 @@ var render_busy = false;
 var render_buffer = [];
 
 var el;
+var canvas_jqel;
 var ctx;
 var canvasWidth;
 var canvasHeight;
+
+var mouse_in_canvas = false;
+var mouse_x = 0;
+var mouse_y = 0;
 
 var fft_colour = 'green';
 
@@ -42,6 +52,7 @@ $(function() {
   canvasWidth = $("#fft-col").width();
   
   el = document.getElementById('c');
+  canvas_jqel = $("#c");
 
   initCanvas();
 
@@ -104,6 +115,39 @@ $(function() {
   {
     document.getElementById("batchat-bottom-bar").focus();
   }
+
+  if(typeof signals !== 'undefined')
+  {
+    canvas_jqel.on('mousemove', function(e) {
+      mouse_in_canvas = true;
+
+      const el_boundingRectangle = el.getBoundingClientRect();
+      mouse_x = e.clientX - el_boundingRectangle.left;
+      mouse_y = e.clientY - el_boundingRectangle.top;
+
+      render_signal_box(mouse_x, mouse_y);
+    });
+
+    canvas_jqel.on('mouseleave', function(e) {
+      mouse_in_canvas = false;
+    });
+    
+    if(typeof signal_selected !== 'undefined')
+    {
+      canvas_jqel.on('click', function(e) {
+        const el_boundingRectangle = el.getBoundingClientRect();
+        clicked_x = e.clientX - el_boundingRectangle.left;
+        clicked_y = e.clientY - el_boundingRectangle.top;
+
+        render_signal_selected_box(clicked_x, clicked_y);
+
+        if(signal_selected != null && typeof signal_tune !== 'undefined')
+        {
+          signal_tune(signal_selected.frequency, signal_selected.symbolrate);
+        }        
+      });
+    }
+  }
 });
 
 function initCanvas()
@@ -140,57 +184,55 @@ function updateFFT(data)
 {
   var i;
 
-  const _start_freq = 490.75;
+  const _start_freq = 490.5;
 
   /* Clear Screen */
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
+  ctx.save(); 
+  
   /* Draw Dashed Vertical Lines and headers */
-  ctx.save();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'grey';
   ctx.setLineDash([5, 20]);
+  ctx.font = "15px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
   for(i=0;i<18;i+=2)
   {
     /* Draw vertical line */
     ctx.beginPath();
-    ctx.moveTo((canvasWidth/36)+i*(canvasWidth/18),25);
-    ctx.lineTo((canvasWidth/36)+i*(canvasWidth/18),canvasHeight*(7/8));
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'grey';
+    ctx.moveTo((canvasWidth/18)+i*(canvasWidth/18),25);
+    ctx.lineTo((canvasWidth/18)+i*(canvasWidth/18),canvasHeight*(7/8));
     ctx.stroke();
     /* Draw Vertical Text */
-    ctx.font = "15px Arial";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText("10.4"+(91+(i*0.5)),(canvasWidth/36)+i*(canvasWidth/18),17);
+    ctx.fillText("10.4"+(91+(i*0.5)),(canvasWidth/18)+i*(canvasWidth/18),17);
   }
-  ctx.restore();
 
   /* Draw Horizontal Lines */
-  ctx.save();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'grey';
   ctx.setLineDash([5, 10]);
+  ctx.font = "12px Arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
   for(i=1;i<=4;i++)
   {
     linePos = (i*(canvasHeight/4))-(canvasHeight/6);
     ctx.beginPath();
     ctx.moveTo(0+35, linePos);
     ctx.lineTo(canvasWidth-35, linePos);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'grey';
     ctx.stroke();
     /* Annotate lines above 0dB */
     if(i!=4)
     {
-      ctx.font = "12px Arial";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
       ctx.fillText((5*(4-i))+"dB",17,linePos+4);
       ctx.fillText((5*(4-i))+"dB",canvasWidth-17,linePos+4);
     }
   }
-  ctx.restore();
 
   /* Draw Minor Horizontal Lines */
-  ctx.save();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'grey';
   ctx.setLineDash([1, 10]);
   for(i=1;i<20;i++)
   {
@@ -200,165 +242,72 @@ function updateFFT(data)
       ctx.beginPath();
       ctx.moveTo(0+10, linePos);
       ctx.lineTo(canvasWidth-10, linePos);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'grey';
       ctx.stroke();
     }
   }
-  ctx.restore();
 
+  ctx.restore();
 
   /* Draw Band Splits */
-  ctx.save();
-
-  /* Band Start */
-  ctx.beginPath();
-  ctx.moveTo(((491)-_start_freq)*(canvasWidth/9),canvasHeight*(7.1/8));
-  ctx.lineTo(((491)-_start_freq)*(canvasWidth/9),canvasHeight*(7.9/8));
   ctx.lineWidth = 1;
   ctx.strokeStyle = 'grey';
-  ctx.stroke();
+
+  function draw_divider(frequency, height)
+  {
+    ctx.beginPath();
+    ctx.moveTo((frequency-_start_freq)*(canvasWidth/9),canvasHeight*height);
+    ctx.lineTo((frequency-_start_freq)*(canvasWidth/9),canvasHeight*(7.9/8));
+    ctx.stroke();
+  }
 
   /* Beacon & Simplex / Simplex */
-  ctx.beginPath();
-  ctx.moveTo(((494)-_start_freq)*(canvasWidth/9),canvasHeight*(7.1/8));
-  ctx.lineTo(((494)-_start_freq)*(canvasWidth/9),canvasHeight*(7.9/8));
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'grey';
-  ctx.stroke();
+  draw_divider(492.5, (7.1/8.0));
 
   /* Simplex / RB-TV */
-  ctx.beginPath();
-  ctx.moveTo(((497)-_start_freq)*(canvasWidth/9),canvasHeight*(7.1/8));
-  ctx.lineTo(((497)-_start_freq)*(canvasWidth/9),canvasHeight*(7.9/8));
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'grey';
-  ctx.stroke();
-
-  /* Band End */
-  ctx.beginPath();
-  ctx.moveTo(((499.5)-_start_freq)*(canvasWidth/9),canvasHeight*(7.1/8));
-  ctx.lineTo(((499.5)-_start_freq)*(canvasWidth/9),canvasHeight*(7.9/8));
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = 'grey';
-  ctx.stroke();
-
-  ctx.restore();
+  draw_divider(497.0, (7.325/8.0));
 
   /* Draw channel allocations */
-  ctx.save();
-
   ctx.lineWidth = 2;
   ctx.strokeStyle = 'blue';
 
-  /* Simplex 1Ms */
-  rolloff = 0.2*1.0;
-  ctx.beginPath();
-  ctx.moveTo(((494.0+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((495.5-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
+  function draw_channel(center_frequency, bandwidth, line_height)
+  {
+    const rolloff = 1.35 / 2.0;
 
-  ctx.beginPath();
-  ctx.moveTo(((495.5+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((497.0-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(((center_frequency-(rolloff*bandwidth))-_start_freq)*(canvasWidth/9),canvasHeight*line_height);
+    ctx.lineTo(((center_frequency+(rolloff*bandwidth))-_start_freq)*(canvasWidth/9),canvasHeight*line_height);
+    ctx.stroke();
+  }
 
-  /* Simplex 2Ms */
-  rolloff = 0.2*2.0;
-  ctx.beginPath();
-  ctx.moveTo(((494+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((497-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
+  /* 1MS */
+  for(var f=493.25; f<=496.25; f=f+1.5)
+  {
+    draw_channel(f, 1.0, (7.375/8));
+  }
 
-  /* RB-TV 125Ks */
-  rolloff = 0.2*0.125;
-  ctx.beginPath();
-  ctx.moveTo(((497.00+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((497.25-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
+  /* 333Ks */
+  for(var f=492.75; f<=499.25; f=f+0.5)
+  {
+    draw_channel(f, 0.333, (7.25/8));
+  }
 
-  ctx.beginPath();
-  ctx.moveTo(((497.25+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((497.50-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((497.50+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((497.75-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((497.75+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((498.00-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((498.00+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((498.25-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((498.25+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((498.50-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((498.50+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((498.75-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((498.75+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((499.00-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((499.00+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((499.25-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((499.25+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.lineTo(((499.50-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.15/8));
-  ctx.stroke();
-
-  /* RB-TV 333Ks */
-  rolloff = 0.2*0.333;
-  ctx.beginPath();
-  ctx.moveTo(((497.0+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((497.5-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((497.5+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((498.0-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((498.0+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((498.5-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((498.5+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((499.0-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(((499.0+(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.lineTo(((499.5-(rolloff/2))-_start_freq)*(canvasWidth/9),canvasHeight*(7.3/8));
-  ctx.stroke();
+  /* 125Ks */
+  for(var f=492.75; f<=499.25; f=f+0.25)
+  {
+    draw_channel(f, 0.125, (7.125/8));
+  }
 
   ctx.restore();
 
   /* Annotate Bands */
-  ctx.save();
   ctx.font = "15px Arial";
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
-  ctx.fillText("A71A DATV Beacon",((492.5)-_start_freq)*(canvasWidth/9),canvasHeight-42);
-  ctx.fillText("(10492.500, 2MS/s QPSK, 2/3)",((492.5)-_start_freq)*(canvasWidth/9),canvasHeight-18);
-  ctx.fillText("Wide & Narrow DATV",((495.5)-_start_freq)*(canvasWidth/9),canvasHeight-15);
+  ctx.fillText("A71A DATV Beacon",((491.5)-_start_freq)*(canvasWidth/9),canvasHeight-45);
+  ctx.fillText("10491.500",((491.5)-_start_freq)*(canvasWidth/9),canvasHeight-28);
+  ctx.fillText("(1.5MS/s QPSK, 4/5)",((491.5)-_start_freq)*(canvasWidth/9),canvasHeight-12);
+  ctx.fillText("Wide & Narrow DATV",((494.75)-_start_freq)*(canvasWidth/9),canvasHeight-15);
   ctx.fillText("Narrow DATV",((498.25)-_start_freq)*(canvasWidth/9),canvasHeight-15);
   ctx.restore();
 
@@ -367,13 +316,13 @@ function updateFFT(data)
   {
     var start_height = canvasHeight*(7/8);
     var data_length = data.length;
-    ctx.lineWidth=1;
-    ctx.strokeStyle = fft_colour;
 
     var sample;
     var sample_index;
     var sample_index_f;
-    ctx.save();
+
+    ctx.lineWidth=1;
+    ctx.strokeStyle = fft_colour;
     for(i=0; i<canvasWidth; i++)
     {
       sample_index = (i*data_length)/ canvasWidth;
@@ -394,7 +343,6 @@ function updateFFT(data)
   }
   else
   {
-    ctx.save();
     ctx.font = "15px Arial";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
@@ -508,23 +456,17 @@ function print_frequency(freq,symrate)
 }
 
 
+const scale_db = 3276.8;
 function is_overpower(beacon_strength, signal_strength, signal_bw)
 {
-  const scale_db = 3276.8;
-
   if(beacon_strength != 0)
   {
-    //if(signal_bw < 0.06) // < 66KS
-    //{
-    //  return false;
-    //}
-
     if(signal_bw < 0.7) // < 1MS
     {
       return false;
     }
     
-    if(signal_strength > beacon_strength) // >= 1MS
+    if(signal_strength > (beacon_strength - (0.75 * scale_db))) // >= 1MS
     {
       return true;
     }
@@ -554,6 +496,12 @@ function detect_signals(fft_data)
 
   var text_x_position;
 
+  if(typeof signals !== 'undefined')
+  {
+    /* Clear signals array */
+    signals = [];
+  }
+
   for(i=2;i<fft_data.length;i++)
   {
     if(!in_signal)
@@ -579,7 +527,6 @@ function detect_signals(fft_data)
           acc_i = acc_i + 1;
         }
         /*
-        ctx.save();
           ctx.lineWidth=1;
           ctx.strokeStyle = 'white';
           ctx.beginPath();
@@ -591,7 +538,6 @@ function detect_signals(fft_data)
 
         strength_signal = acc / acc_i;
         /*
-        ctx.save();
           ctx.lineWidth=1;
           ctx.strokeStyle = 'white';
           ctx.beginPath();
@@ -607,7 +553,6 @@ function detect_signals(fft_data)
           start_signal = j;
         }
         /*
-        ctx.save();
           ctx.lineWidth=1;
           ctx.strokeStyle = 'white';
           ctx.beginPath();
@@ -623,7 +568,6 @@ function detect_signals(fft_data)
           end_signal = j;
         }
         /*
-        ctx.save();
           ctx.lineWidth=1;
           ctx.strokeStyle = 'white';
           ctx.beginPath();
@@ -636,12 +580,25 @@ function detect_signals(fft_data)
         mid_signal = start_signal + ((end_signal - start_signal)/2.0);
 
         signal_bw = align_symbolrate((end_signal - start_signal) * (9.0 / fft_data.length));
-        signal_freq = 490.75 + (((mid_signal+1) / fft_data.length) * 9.0);
+        signal_freq = 490.5 + (((mid_signal+1) / fft_data.length) * 9.0);
+
+	if(typeof signals !== 'undefined')
+        {
+          signals.push(
+            {
+              "start": (start_signal/fft_data.length)*canvasWidth,
+              "end": (end_signal/fft_data.length)*canvasWidth,
+              "top": canvasHeight-((strength_signal/65536) * canvasHeight),
+              "frequency": 10000 + signal_freq,
+              "symbolrate": 1000.0 * signal_bw
+            }
+          );
+        }
 
         // Exclude signals in beacon band
-        if(signal_freq < 492.6)
+        if(signal_freq < 492.0)
         {
-          if(signal_bw > 1.2)
+          if(signal_bw >= 1.0)
           {
             // Probably the Beacon!
             beacon_strength = strength_signal;
@@ -668,54 +625,145 @@ function detect_signals(fft_data)
             text_x_position = canvasWidth - 55;
           }
 
-          ctx.save();
-
           ctx.font = "14px Arial";
           ctx.fillStyle = "white";
           ctx.textAlign = "center";
           if(!is_overpower(beacon_strength, strength_signal, signal_bw))
-  {
+          {
             ctx.fillText(
               print_symbolrate(signal_bw)+", "+print_frequency(signal_freq,signal_bw),
               text_x_position,
               canvasHeight-((strength_signal/65536) * canvasHeight) - 16
             );
-  }
-  else
+            ctx.restore();
+          }
+          else
           {
             ctx.fillText(
               "[over-power]",
               text_x_position,
               canvasHeight-((strength_signal/65536) * canvasHeight) - 16
             );
-          }
+            ctx.restore();
 
-          ctx.restore();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'white';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - ((beacon_strength-(1.0*scale_db))/65536)));
+            ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - ((beacon_strength-(1.0*scale_db))/65536)));
+            ctx.stroke();
+	    ctx.setLineDash([]);
+            ctx.restore();
+          }
         }
       }
     }
   }
-if(in_signal)
-{
-end_signal = fft_data.length;
-acc = 0;
+
+  if(in_signal)
+  {
+    end_signal = fft_data.length;
+    acc = 0;
     acc_i = 0;
     for(j=(start_signal + (0.3*(end_signal - start_signal))) | 0; j<start_signal+(0.7*(end_signal - start_signal)); j++)
     {
       acc = acc + fft_data[j];
       acc_i = acc_i + 1;
     }
-
+  
     strength_signal = acc / acc_i;
-
-    ctx.save();
-ctx.fillText(
+  
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(
       "[out-of-band]",
       (canvasWidth - 55),
       canvasHeight-((strength_signal/65536) * canvasHeight) - 16
     );
     ctx.restore();
+  }
+
+  if(typeof signals !== 'undefined' && mouse_in_canvas)
+  {
+    render_signal_box(mouse_x, mouse_y);
+  }
+  if(typeof signal_selected !== 'undefined' && signal_selected != null)
+  {
+    render_signal_selected_box(clicked_x, clicked_y);
+  }
 }
+
+function render_signal_box(mouse_x, mouse_y)
+{
+  if(mouse_y < (canvasHeight * 7/8))
+  {
+    for(i=0; i<signals.length; i++)
+    {
+      if(mouse_x > signals[i].start
+        && mouse_x < signals[i].end
+        && mouse_y > signals[i].top)
+      {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'white';
+        
+	ctx.beginPath();
+        ctx.moveTo(signals[i].start, canvasHeight * (7/8));
+        ctx.lineTo(signals[i].start, signals[i].top);
+        ctx.stroke();
+        
+	ctx.beginPath();
+        ctx.moveTo(signals[i].start, signals[i].top);
+        ctx.lineTo(signals[i].end, signals[i].top);
+        ctx.stroke();
+        
+	ctx.beginPath();
+        ctx.moveTo(signals[i].end, canvasHeight * (7/8));
+        ctx.lineTo(signals[i].end, signals[i].top);
+        ctx.stroke();
+        
+	ctx.restore();
+
+        return;
+      }
+    }
+  }
+}
+
+function render_signal_selected_box(mouse_x, mouse_y)
+{
+  if(mouse_y < (canvasHeight * 7/8))
+  {
+    for(i=0; i<signals.length; i++)
+    {
+      if(mouse_x > signals[i].start
+        && mouse_x < signals[i].end
+        && mouse_y > signals[i].top)
+      {
+        signal_selected = signals[i];
+
+        ctx.save();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(signal_selected.start, canvasHeight * (7/8));
+        ctx.lineTo(signal_selected.start, signal_selected.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(signal_selected.start, signal_selected.top);
+        ctx.lineTo(signal_selected.end, signal_selected.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(signal_selected.end, canvasHeight * (7/8));
+        ctx.lineTo(signal_selected.end, signal_selected.top);
+        ctx.stroke();
+        ctx.restore();
+
+        return;
+      }
+    }
+  }
 }
 
 function fft_fullscreen()

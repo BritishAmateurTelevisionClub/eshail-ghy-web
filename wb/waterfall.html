@@ -46,6 +46,9 @@
         line-height: 1.0;
         padding-left: 0.5rem;
       }
+      #c {
+        background-color: black;
+      }
       #under-canvas {
         text-align: center;
         margin-left: auto;
@@ -63,7 +66,13 @@
       #bandplan-link {
         display: inline-block;
       }
+      #fft-colour-select {
+        margin-left: 3px;
+      }
       #fullscreen-link {
+        margin-left: 3px;
+      }
+      #fullscreen-link-span {
         float: right;
       }
       #chat {
@@ -102,60 +111,57 @@
     </style>
     <script src="/lib/jquery-3.4.1.min.js"></script>
     <script src="/lib/bootstrap-4.4.1/js/bootstrap.min.js"></script>
-    <script src="/lib/socket.io-2.2.0.min.js"></script>
+    <script src="/lib/socket.io-2.3.0.min.js"></script>
     <script src="/lib/chat.js?v=2"></script>
+    <script src="/lib/u16Websocket.js?v=0"></script>
     <script>
       const ws_url = "wss://"+window.location.hostname+"/wb/fft";
-      var ws_sock = null;
-      var ws_reconnect = null;
+      var ws_name = 'fft';
 
       var render_timer;
-      const render_interval = 250; // ms
+      const render_interval_map = {
+        'fft': 250, // ms
+        'fft_fast': 100 // ms
+      };
+      var render_interval = render_interval_map[ws_name];
       var render_busy = false;
       var render_buffer = [];
 
-      var fft_avg = new Array(820).fill(0);
-      var fft_avg_n = 0;
-
-      function fft_avg_dump()
-      {
-	var i;
-	var fft_avg_new = [];
-        for (i = 0; i < 820; i++) {
-            fft_avg_new[i] = Math.round(fft_avg[i] / fft_avg_n);
-        } 
-        let csvContent = "data:text/csv;charset=utf-8," 
-    + fft_avg_new.join(",");
-
-        var encodedUri = encodeURI(csvContent);
-var link = document.createElement("a");
-link.setAttribute("href", encodedUri);
-link.setAttribute("download", "my_data.csv");
-document.body.appendChild(link); // Required for FF
-
-link.click(); // This will download the data file named "my_data.csv".
-
-        console.log(fft_avg_new);
-      }
-
-      var el;
       var ctx;
       var canvasWidth;
       var canvasHeight;
+
+      var fft_colour = 'green';
+
+      /* Load vars from local storage */
+      if(typeof(Storage) !== "undefined")
+      {
+        storageSupport = true;
+
+        if(localStorage.wb_fft_colour)
+        {
+          fft_colour = localStorage.wb_fft_colour;
+        }
+
+        if(localStorage.wb_fft_speed)
+        {
+          ws_name = localStorage.wb_fft_speed;
+          render_interval = render_interval_map[ws_name];
+        }
+      }
+
+      var fft_ws = new u16Websocket(ws_url, ws_name, render_buffer);
 
       /* On load */
       $(function() {
         canvasHeight = 542;
         canvasWidth = $("#fft-col").width();
-        
-        el = document.getElementById('c');
 
         initCanvas();
 
-        updateFFT(null);
+        wf = new Waterfall($("#c"), colour_map);
 
-        /* Connect to websocket feed */
-        ws_connect();
+        //updateFFT(null);
        
         var chat = new BATC_Chat({
           element: $("#chat"),
@@ -171,6 +177,42 @@ link.click(); // This will download the data file named "my_data.csv".
         {
           $("#fullscreen-link").hide();
         }
+
+        /* Change colour handler */
+        $("#fft-colour-select").change(function()
+        {
+           fft_colour = $(this).children("option:selected").val();
+           if(storageSupport)
+           {
+            localStorage.wb_fft_colour = fft_colour;
+           }
+        });
+
+        /* Change colour handler */
+        $("#fft-speed-select").change(function()
+        {
+           ws_name = $(this).children("option:selected").val();
+           render_interval = render_interval_map[ws_name];
+           clearInterval(render_timer);
+           render_timer = setInterval(render_fft, render_interval);
+           fft_ws.changeName(ws_name);
+           if(storageSupport)
+           {
+            localStorage.wb_fft_speed = ws_name;
+           }
+        });
+
+        /* If we loaded value from localStorage then we probably need to set the colour */
+        if(storageSupport && localStorage.wb_fft_colour)
+        {
+            $("#fft-colour-select").val(fft_colour);
+        }
+
+        /* If we loaded value from localStorage then we probably need to set the fft speed */
+        if(storageSupport && localStorage.wb_fft_speed)
+        {
+            $("#fft-speed-select").val(ws_name);
+        }
       });
 
       function initCanvas()
@@ -178,7 +220,7 @@ link.click(); // This will download the data file named "my_data.csv".
         $("#c").attr( "width", canvasWidth );
         $("#c").attr( "height", canvasHeight );
 
-        ctx = el.getContext('2d');
+        ctx = $("#c")[0].getContext('2d');
 
         devicePixelRatio = window.devicePixelRatio || 1,
         backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
@@ -201,6 +243,118 @@ link.click(); // This will download the data file named "my_data.csv".
 
           ctx.scale(ratio, ratio);
         }
+      }
+
+      function drawChannels(_ctx, _baseHeightFraction)
+      {
+        _ctx.save();
+
+        _ctx.lineWidth = 1;
+        _ctx.strokeStyle = 'blue';
+
+        /* Beacon & Simplex 1Ms */
+        rolloff = 0.2*1.0;
+        _ctx.beginPath();
+        _ctx.moveTo(((491.0+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((492.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((492.5+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((494.0-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        /* Beacon & Simplex 2Ms */
+        rolloff = 0.2*2.0;
+        _ctx.beginPath();
+        _ctx.moveTo(((491+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.lineTo(((494-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.stroke();
+
+        /* Simplex 1Ms */
+        rolloff = 0.2*1.0;
+        _ctx.beginPath();
+        _ctx.moveTo(((494.0+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((495.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((495.5+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((497.0-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        /* Simplex 2Ms */
+        rolloff = 0.2*2.0;
+        _ctx.beginPath();
+        _ctx.moveTo(((494+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.lineTo(((497-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.stroke();
+
+        /* RB-TV 125Ks */
+        rolloff = 0.2*0.125;
+        _ctx.beginPath();
+        _ctx.moveTo(((497.00+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((497.25-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((497.25+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((497.50-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((497.50+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((497.75-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((497.75+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((498.00-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((498.00+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((498.25-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((498.25+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((498.50-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((498.50+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((498.75-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((498.75+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.lineTo(((499.00-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + 0));
+        _ctx.stroke();
+
+        /* RB-TV 333Ks */
+        rolloff = 0.2*0.333;
+        _ctx.beginPath();
+        _ctx.moveTo(((497.0+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.lineTo(((497.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((497.5+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.lineTo(((498.0-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((498.0+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.lineTo(((498.5-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.stroke();
+
+        _ctx.beginPath();
+        _ctx.moveTo(((498.5+(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.lineTo(((499.0-(rolloff/2))-491)*(canvasWidth/8),canvasHeight*(_baseHeightFraction + (0.15/8)));
+        _ctx.stroke();
+
+        _ctx.restore();
       }
 
       function updateFFT(data)
@@ -420,7 +574,7 @@ link.click(); // This will download the data file named "my_data.csv".
           var start_height = canvasHeight*(7/8);
           var data_length = data.length;
           ctx.lineWidth=1;
-          ctx.strokeStyle = 'green';
+          ctx.strokeStyle = fft_colour;
 
           var sample;
           var sample_index;
@@ -452,75 +606,7 @@ link.click(); // This will download the data file named "my_data.csv".
         ctx.fillText("Beacon (DVB-S2, 2MS/s QPSK, 2/3)",((492.55)-491)*(canvasWidth/8),canvasHeight*(3.0/8));
       }
 
-      function ws_connect()
-      {
-        if("WebSocket" in window)
-        {
-          if(ws_sock != null)
-          {
-            return;
-          }
-        
-          if (typeof MozWebSocket != "undefined")
-          {
-            ws_sock = new MozWebSocket(ws_url, "fft");
-          }
-          else
-          {
-            ws_sock = new WebSocket(ws_url, "fft");
-          }
-
-          ws_sock.binaryType = 'arraybuffer';
-
-          ws_sock.onopen = function()
-          {
-            window.clearInterval(ws_reconnect);
-            ws_reconnect = null;
-            //console.log("Websocket Connection Opened");
-          } 
-
-          ws_sock.onmessage = function got_packet(msg)
-          {
-            try
-            {
-              parsed_fft = new Uint16Array(msg.data);
-              if(parsed_fft != null)
-              {
-                render_buffer.push(parsed_fft);
-		  for ([index,value] of parsed_fft.entries())
-		  {
-		    fft_avg[index] = fft_avg[index] + value;
-                  }
-		  fft_avg_n = fft_avg_n + 1;
-              }
-            }
-            catch(e)
-            {
-              console.log("Error parsing binary!",e);
-            }
-          } 
-
-          ws_sock.onclose = function()
-          {
-            ws_sock.close();
-            ws_sock = null;
-            
-            if(!ws_reconnect)
-            {
-              ws_reconnect = setInterval(function()
-              {
-                ws_connect();
-              },500);
-            }
-          }
-        }
-        else
-        {
-          alert("Websockets not supported in your browser!");
-        }
-      }
-
-      render_timer = setInterval(function()
+      function render_fft()
       {
         if(!render_busy)
         {
@@ -529,8 +615,9 @@ link.click(); // This will download the data file named "my_data.csv".
           {
             /* Pull oldest frame off the buffer and render it */
             var data_frame = render_buffer.shift();
-            updateFFT(data_frame);
-            detect_signals(data_frame);
+            //updateFFT(data_frame);
+            wf.addLine(data_frame);
+            //detect_signals(data_frame);
 
             /* If we're buffering up, remove old queued frames (unsure about this) */
             if(render_buffer.length > 2)
@@ -544,7 +631,8 @@ link.click(); // This will download the data file named "my_data.csv".
         {
           console.log("Slow render blocking next frame, configured interval is ", render_interval);
         }
-      }, render_interval);
+      }
+      render_timer = setInterval(render_fft, render_interval);
 
       function update_stats(num) {
         $("#stats").text("Wideband viewers: "+num);
@@ -663,6 +751,8 @@ link.click(); // This will download the data file named "my_data.csv".
         var strength_signal;
         var signal_bw;
         var signal_freq;
+        var acc;
+        var acc_i;
 
         var beacon_strength = 0;
 
@@ -684,10 +774,9 @@ link.click(); // This will download the data file named "my_data.csv".
             {
               in_signal = false;
 
-
               end_signal = i;
-              var acc = 0;
-              var acc_i = 0;
+              acc = 0;
+              acc_i = 0;
               for(j=(start_signal + (0.3*(end_signal - start_signal))) | 0; j<start_signal+(0.7*(end_signal - start_signal)); j++)
               {
                 acc = acc + fft_data[j];
@@ -810,6 +899,27 @@ link.click(); // This will download the data file named "my_data.csv".
             }
           }
         }
+	if(in_signal)
+	{
+	  end_signal = fft_data.length;
+	  acc = 0;
+          acc_i = 0;
+          for(j=(start_signal + (0.3*(end_signal - start_signal))) | 0; j<start_signal+(0.7*(end_signal - start_signal)); j++)
+          {
+            acc = acc + fft_data[j];
+            acc_i = acc_i + 1;
+          }
+
+          strength_signal = acc / acc_i;
+
+          ctx.save();
+	  ctx.fillText(
+            "[out-of-band]",
+            (canvasWidth - 55),
+            canvasHeight-((strength_signal/65536) * canvasHeight) - 16
+          );
+          ctx.restore();
+	}
       }
 
       function fft_fullscreen()
@@ -911,6 +1021,97 @@ link.click(); // This will download the data file named "my_data.csv".
 
       // Android doesn't always fire orientationChange on 180 degree turns
       setInterval(checkOrientation, 2000);
+
+      var colour_map = new ColourMap();
+      var wf;
+
+      function Waterfall(canvasJqueryElement, colourMap)
+        {
+            this.width = canvasJqueryElement.width();
+            this.height = canvasJqueryElement.height();
+
+            this.map = colourMap;
+
+            this.imgFront = canvasJqueryElement[0];
+            this.ctxFront = this.imgFront.getContext("2d");
+
+            this.lineImage = this.ctxFront.createImageData(this.width, 1);
+
+            this.backCanvas = document.createElement('canvas');
+
+            this.backCanvas.width = this.width;
+            this.backCanvas.height = this.height;
+            this.backCtx = this.backCanvas.getContext('2d');
+
+            this.addLine = function(data)
+            {
+              var dataLength = data.length;
+              var imgdata = this.lineImage.data;
+              var lookup = 0;
+              var i = 0;
+
+              for (lookup = 0; lookup < this.width; lookup++)
+              {
+                sample_index = (lookup*dataLength)/this.width;
+                sample_index_f = sample_index | 0;
+                sample = data[sample_index_f]
+                   + (sample_index - sample_index_f) * (data[sample_index_f+1] - data[sample_index_f]);
+                sample_fraction = sample * (256 / 65536);
+                var rgb = this.map[sample_fraction | 0];
+                imgdata[i++] = rgb[0];
+                imgdata[i++] = rgb[1];
+                imgdata[i++] = rgb[2];
+                imgdata[i++] = 255;
+              }
+              /* Back canvas: Move existing image down 1 pixel (trimming the bottom) */
+              this.backCtx.drawImage(this.backCanvas, 
+                            0, 20+0, this.width, this.height - 1, 
+                            0, 20+1, this.width, this.height - 1);
+              /* Back canvas: Add rendered line in at the top */
+              this.backCtx.putImageData(this.lineImage, 0, 20);
+
+              /* render onto front canvas */
+              this.ctxFront.drawImage(this.backCanvas, 0, 0, this.width, this.height);
+              drawChannels(this.ctxFront, (0.075/8));
+            };
+        }
+
+        function ColourMap()
+        {
+          var map = new Array(256);
+
+          var e;
+          for (e = 0; 64 > e; e++)
+          {
+            map[e] = new Uint8Array(3);
+            map[e][0] = 0;
+            map[e][1] = 0;
+            map[e][2] = 2 * e;
+          }
+          for (; 128 > e; e++)
+          {
+            map[e] = new Uint8Array(3);
+            map[e][0] = 3 * e - 192;
+            map[e][1] = 0;
+            map[e][2] = 2 * e;
+          }
+          for (; 192 > e; e++)
+          {
+            map[e] = new Uint8Array(3);
+            map[e][0] = e + 64;
+            map[e][1] = 256 * Math.sqrt((e - 128) / 64);
+            map[e][2] = 511 - 2 * e;
+          }
+          for (; 256 > e; e++)
+          {
+            map[e] = new Uint8Array(3);
+            map[e][0] = 255;
+            map[e][1] = 255;
+            map[e][2] = 512 + 2 * e;
+          }
+
+          return map;
+        }
     </script>
   </head>
   <body class="bg-light">
@@ -959,7 +1160,7 @@ link.click(); // This will download the data file named "my_data.csv".
         <li>Dish Pointing Calculator & Map: <a href="https://eshail.batc.org.uk/point/" target="_blank">eshail.batc.org.uk/point/</a></li>
       </ul>
       <ul>
-        <li><b>New:</b> DATV Operator Station List: <a href="https://wiki.batc.org.uk/QO100_DATV_Users" target="_blank">wiki.batc.org.uk/QO100_DATV_Users</a></li>
+        <li>DATV Operator Station List: <a href="https://wiki.batc.org.uk/QO100_DATV_Users" target="_blank">wiki.batc.org.uk/QO100_DATV_Users</a></li>
       </ul>
     </div>
 
@@ -967,11 +1168,22 @@ link.click(); // This will download the data file named "my_data.csv".
       <div class="row">
 
         <div id="fft-col" class="col-xl-7">
-          <canvas id="c" width="1" height="1" style="background-color: black;"></canvas>
+          <canvas id="c" width="1" height="1"></canvas>
           <div id="under-canvas">
             <span id="stats">Loading..</span>
             <span id="bandplan-link"><a href="https://wiki.batc.org.uk/Es%27hail-2_DATV_Bandplan" target="_blank">DATV Bandplan</a></span>
-            <span id="fullscreen-link"><button onclick="fft_fullscreen();">Open fullscreen</button></span>
+            <span id="fullscreen-link-span">
+                <select id="fft-speed-select">
+                    <option value="fft" selected="selected">Slow</option>
+                    <option value="fft_fast">Fast</option>
+                </select>
+                <select id="fft-colour-select">
+                    <option value="green" selected="selected">Green</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                </select>
+                <button id="fullscreen-link" onclick="fft_fullscreen();">Open fullscreen</button></span>
           </div>
         </div>
 

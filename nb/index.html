@@ -149,7 +149,7 @@
     <script src="/lib/jquery-3.4.1.min.js"></script>
     <script src="/lib/bootstrap-4.4.1/js/bootstrap.min.js"></script>
     <script src="tmp/bandinfo.js"></script>
-    <script src="websdr-base.js?v=4"></script>
+    <script src="websdr-base.js?v=7"></script>
   </head>
   <body class="bg-light" onload=bodyonload()>
     <div id="logo-row" class="row">
@@ -186,22 +186,19 @@
         This WebSDR, hosted at Goonhilly Earth Station in Cornwall, enables you to listen to the Qatar-OSCAR 100 Narrow band transponder onboard the Es'hail-2 satellite.
       </p>
       <p>
-        You can read more about the WebSDR & Spectrum Viewer station at <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank">wiki.batc.org.uk/Es'hail-2 Ground Station</a>
+        You can read more about this WebSDR & Spectrum Viewer station at <a href="https://wiki.batc.org.uk/Es%27hail-2_Ground_Station" target="_blank">wiki.batc.org.uk/Es'hail-2 Ground Station</a>
       </p>
       <ul>
-        <li>For more details on Qatar-OSCAR 100 see <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">amsat-dl.org/eshail-2-amsat-phase-4-a</a></li>
+        <li>For more information about Qatar-OSCAR 100 see <a href="https://amsat-dl.org/eshail-2-amsat-phase-4-a" target="_blank">amsat-dl.org/eshail-2-amsat-phase-4-a</a></li>
       </ul>
       <ul>
         <li>The QO-100 wideband spectrum monitor can be found here <a href="https://eshail.batc.org.uk/wb/" target="_blank">eshail.batc.org.uk/wb/</a></li>
       </ul>
       <ul>
-        <li>More information about the WebSDR software can be found on <a href="http://www.websdr.org" target="_blank">www.websdr.org</a></li>
-      </ul>
-      <ul>
         <li>Dish Pointing Calculator & Map: <a href="https://eshail.batc.org.uk/point/" target="_blank">eshail.batc.org.uk/point/</a></li>
       </ul>
       <ul>
-        <li><b><a href="https://amsat-dl.org/p4-a-nb-transponder-bandplan-and-operating-guidelines/" target="_blank">QO-100 Bandplan & Operating Guidelines</a></b></li>
+        <li><b><a href="AMSAT-QO-100-NB-Transponder-Bandplan-Graph-1140x641.png" target="_blank">QO-100 Narrowband Bandplan</a> & <a href="https://amsat-dl.org/p4-a-nb-transponder-bandplan-and-operating-guidelines/" target="_blank">Operating Guidelines</a></b></li>
       </ul>
     </div>
 
@@ -222,8 +219,6 @@
 
     <hr class="hr-reducedmargin" style="clear:both">
 
-    <div id="receiver-interface">
-
       <form name="viewform" action="#">
         <div class="ctl">
           <b>View:</b>
@@ -243,41 +238,42 @@
           </div>
         </div>
       </form>
-
-      <form name="html5choiceform" action="#">
-        <div class="ctl">
-          <b>Waterfall:</b>&nbsp;<span id="html5-waterfall-status">HTML5</span>
-          &nbsp;&nbsp;
-          <b>Sound:</b>&nbsp;<span id="html5-sound-status">HTML5</span>
-          <input class="sound-start" id="autoplay-start" type="button" value="Click to start sound!" onclick="start_audio();">
-        </div>
-      </form>
-
+    <form name="html5choiceform" action="#">
       <div class="ctl">
-        Narrowband listeners: <span id=numusers>_</span>
+        <b>Waterfall:</b>&nbsp;<span id="html5-waterfall-status">HTML5</span>
+        &nbsp;&nbsp;
+        <b>Sound:</b>&nbsp;<span id="html5-sound-status">HTML5</span>
+        <input class="sound-start" id="autoplay-start" type="button" value="Click to start sound!" onclick="start_audio();">
       </div>
+    </form>
 
-      <br style="clear:both">
+    <div class="ctl">
+      Narrowband listeners: <span id=numusers>_</span>
+    </div>
 
-      <div style="position:relative" class=clear>
-        <div id="waterfalls" title="Spectrum Graphical Display"></div>
-        <div class="hideblind">
-          <img src="edgelower.png" title="drag to change filter" id="edgelower" onmousedown="mousedownlower(event)" class="scaleabs" alt="">
-          <img src="edgeupper.png" title="drag to change filter" id="edgeupper" onmousedown="mousedownupper(event)" class="scaleabs" alt="">
-          <div id="yellowbara">
-            <div id="yellowbar" title="drag to tune" class="scaleabs" style="position:absolute;width:100px;height:18px;background-color:transparent" onmousedown="mousedownpassband(event)">
-            <div id="yellowbarr" class="scaleabs" style="position:relative;left:0px;">
-              <div class="scaleabs" style="position:absolute;width:0px;height:0px;"></div>
-            </div>
-          </div>
-          <img src="carrier.png" title="drag to tune" id="carrier" onmousedown="mousedownpassband(event)" class="scaleabs" style="z-index:2" alt="">
+    <br style="clear:both">
+
+    <div id="receiver-interface">
+    <div style="position:relative" class=clear>
+      <div id="waterfalls" title="Spectrum Graphical Display"></div>
+      <div class="hideblind">
+        <img src="edgelower.png" title="drag to change filter" id="edgelower" onmousedown="mousedownlower(event)" class="scaleabs" alt="">
+        <img src="edgeupper.png" title="drag to change filter" id="edgeupper" onmousedown="mousedownupper(event)" class="scaleabs" alt="">
+        <div id="yellowbara">
+          <div id="yellowbar" title="drag to tune" class="scaleabs" style="position:absolute;width:100px;height:18px;background-color:transparent" onmousedown="mousedownpassband(event)">
+          <div id="yellowbarr" class="scaleabs" style="position:relative;left:0px;">
+            <div class="scaleabs" style="position:absolute;width:0px;height:0px;"></div>
           </div>
         </div>
+        <img src="carrier.png" title="drag to tune" id="carrier" onmousedown="mousedownpassband(event)" class="scaleabs" style="z-index:2" alt="">
+        </div>
       </div>
+    </div>
 
-      <div id=users title="WebSDR Users"></div>
+    <div id=users title="WebSDR Users"></div>
 
     </div>
+
 
     <div id="receiver-undercontrols">
       <div style="white-space:nowrap;">
@@ -428,6 +424,8 @@
       <div id="stats"></div>
       <div id="soundappletdiv"></div>
       <div id="soundcontext"></div>
+      More information about the WebSDR software can be found on <a href="http://www.websdr.org" target="_blank">www.websdr.org</a>
+      </ul>
     </div>
 
     <hr>

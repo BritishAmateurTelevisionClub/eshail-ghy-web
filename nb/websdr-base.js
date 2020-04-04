@@ -304,30 +304,19 @@ function showdx(b)
 }
 
 const band_markers = [
-  {
-    f: 10489550.000, m: "cw", t: " Lower Beacon", ct: true
-  },
-  {
-    f: 10489555.000, m: "cw", t: " CW ->", ct: true
-  },
-  {
-    f: 10489600.000, m: "usb", t: " NB Digi ->", ct: false
-  },
-  {
-    f: 10489620.000, m: "usb", t: " Digi ->", ct: false
-  },
-  {
-    f: 10489640.000, m: "usb", t: " Mixed ->", ct: false
-  },
-  {
-    f: 10489690.000, m: "usb", t: " SSB ->", ct: false
-  },
-  {
-    f: 10489795.000, m: "usb", t: " Guard Band ->", ct: false
-  },
-  {
-    f: 10489800.000, m: "usb", t: " Upper Beacon", ct: true
-  }
+  { f: 10489500.000, m: "usb", t: " Lower Beacon", ct: true },
+  { f: 10489505.000, m: "cw", t: " CW ->", ct: true },
+  { f: 10489540.000, m: "usb", t: " NB Digi ->", ct: false },
+  { f: 10489580.000, m: "usb", t: " Digi ->", ct: false },
+  { f: 10489625.000, m: "usb", t: "(KG-STV)", ct: false },
+  { f: 10489650.000, m: "usb", t: " SSB ->", ct: false },
+  { f: 10489745.000, m: "usb", t: " Guard Band ->", ct: true },
+  { f: 10489750.000, m: "usb", t: " Mid Beacon", ct: true },
+  { f: 10489755.000, m: "usb", t: " SSB ->", ct: true },
+  { f: 10489850.000, m: "usb", t: " Mixed ->", ct: false },
+  { f: 10489860.000, m: "usb", t: " Emergency Channel", ct: false },
+  { f: 10489995.000, m: "usb", t: " Guard Band ->", ct: false },
+  { f: 10490000.000, m: "usb", t: " Upper Beacon", ct: true }
 ];
 
 function fetchdx(b)
@@ -1099,7 +1088,7 @@ function soundappletstarted2()
 function waterfallappletstarted(id)
 {
   // Phil 6th Apr 2019 - To zoom to transponder bandwidth
-  waterfallapplet[0].setzoom(-2, 512);
+  //waterfallapplet[0].setzoom(-2, 512);
    // this function is called when a waterfall applet becomes active
    waitingforwaterfalls--;
    if (waitingforwaterfalls<0) waitingforwaterfalls=0; // shouldn't happen...
