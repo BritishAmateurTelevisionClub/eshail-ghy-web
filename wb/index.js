@@ -27,6 +27,8 @@ var mouse_y = 0;
 
 var fft_colour = 'green';
 
+var freq_info = [];
+
 /* Load vars from local storage */
 if(typeof(Storage) !== "undefined")
 {
@@ -116,6 +118,40 @@ $(function() {
     document.getElementById("batchat-bottom-bar").focus();
   }
 
+  if(typeof freq_info !== 'undefined')
+  {
+    canvas_jqel.on('mousemove', function(e) {
+      mouse_in_canvas = true;
+
+      const el_boundingRectangle = el.getBoundingClientRect();
+      mouse_x = e.clientX - el_boundingRectangle.left;
+      mouse_y = e.clientY - el_boundingRectangle.top;
+
+      el.title = "";
+      for(var i = 0; i < freq_info.length; i ++) {
+          xd1 = freq_info[i].x1;
+          xd2 = freq_info[i].x2;
+          yd  = freq_info[i].y;
+          if ((mouse_x > xd1-1) && (mouse_x < xd2+1)
+            &&(mouse_y > yd-5) && (mouse_y < yd+5) ) {
+            el.title = "Downlink: " + (10000.00 + freq_info[i].center_frequency) + 
+                       " MHz\nUplink: " + (1910.50 + freq_info[i].center_frequency) +
+                       " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
+                        (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1/1.5/2 Msps");
+
+            ctx = el.getContext('2d');
+            ctx.fillStyle = 'yellow';  // TODO: Stay lit on redraw. Change to red for occupied channels. Edge channels handling ?  
+            ctx.fillRect(xd1, yd, xd2-xd1, 5);
+            break;
+          }
+      }
+    });
+
+  canvas_jqel.on('mouseleave', function(e) {
+      mouse_in_canvas = false;
+    });
+  }
+
   if(typeof signals !== 'undefined')
   {
     canvas_jqel.on('mousemove', function(e) {
@@ -177,7 +213,7 @@ function initCanvas()
     el.style.height = oldHeight + 'px';
 
     ctx.scale(ratio, ratio);
-  }
+  }  
 }
 
 function updateFFT(data)
@@ -267,23 +303,25 @@ function updateFFT(data)
   draw_divider(497.0, (7.325/8.0));
 
   /* Draw channel allocations */
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = 'blue';
+  ctx.fillStyle = 'blue';
 
   function draw_channel(center_frequency, bandwidth, line_height)
   {
     const rolloff = 1.35 / 2.0;
 
-    ctx.beginPath();
-    ctx.moveTo(((center_frequency-(rolloff*bandwidth))-_start_freq)*(canvasWidth/9),canvasHeight*line_height);
-    ctx.lineTo(((center_frequency+(rolloff*bandwidth))-_start_freq)*(canvasWidth/9),canvasHeight*line_height);
-    ctx.stroke();
+    if(typeof freq_info !== 'undefined') {
+
+      if (freq_info.length == 44) freq_info = []; // hack to avoid continued push(). better to precompute all points and draw.
+      freq_info.push({x1: ((center_frequency-(rolloff*bandwidth))-_start_freq)*(canvasWidth/9), x2: ((center_frequency+(rolloff*bandwidth))-_start_freq)*(canvasWidth/9), y: canvasHeight*line_height, center_frequency: center_frequency, bandwidth:bandwidth});
+    }
+
+    ctx.fillRect(((center_frequency-(rolloff*bandwidth))-_start_freq)*(canvasWidth/9), canvasHeight*line_height, 2*(rolloff*bandwidth)*(canvasWidth/9), 5);
   }
 
   /* 1MS */
   for(var f=493.25; f<=496.25; f=f+1.5)
   {
-    draw_channel(f, 1.0, (7.375/8));
+    draw_channel(f, 1.0, (7.475/8));
   }
 
   /* 333Ks */
@@ -295,7 +333,7 @@ function updateFFT(data)
   /* 125Ks */
   for(var f=492.75; f<=499.25; f=f+0.25)
   {
-    draw_channel(f, 0.125, (7.125/8));
+    draw_channel(f, 0.125, (7.025/8));
   }
 
   ctx.restore();
@@ -307,8 +345,8 @@ function updateFFT(data)
   ctx.fillText("A71A DATV Beacon",((491.5)-_start_freq)*(canvasWidth/9),canvasHeight-45);
   ctx.fillText("10491.500",((491.5)-_start_freq)*(canvasWidth/9),canvasHeight-28);
   ctx.fillText("(1.5MS/s QPSK, 4/5)",((491.5)-_start_freq)*(canvasWidth/9),canvasHeight-12);
-  ctx.fillText("Wide & Narrow DATV",((494.75)-_start_freq)*(canvasWidth/9),canvasHeight-15);
-  ctx.fillText("Narrow DATV",((498.25)-_start_freq)*(canvasWidth/9),canvasHeight-15);
+  ctx.fillText("Wide & Narrow DATV",((494.75)-_start_freq)*(canvasWidth/9),canvasHeight-12);
+  ctx.fillText("Narrow DATV",((498.25)-_start_freq)*(canvasWidth/9),canvasHeight-12);
   ctx.restore();
 
   /* Draw FFT */
