@@ -118,55 +118,36 @@ $(function() {
     document.getElementById("batchat-bottom-bar").focus();
   }
 
-  if(typeof freq_info !== 'undefined')
+  canvas_jqel.on('mousemove', function(e)
   {
-    canvas_jqel.on('mousemove', function(e) {
-      mouse_in_canvas = true;
+    mouse_in_canvas = true;
 
-      const el_boundingRectangle = el.getBoundingClientRect();
-      mouse_x = e.clientX - el_boundingRectangle.left;
-      mouse_y = e.clientY - el_boundingRectangle.top;
+    const el_boundingRectangle = el.getBoundingClientRect();
+    mouse_x = e.clientX - el_boundingRectangle.left;
+    mouse_y = e.clientY - el_boundingRectangle.top;
 
-      render_frequency_info(mouse_x, mouse_y);
-    });
+    render_frequency_info(mouse_x, mouse_y);
 
-  canvas_jqel.on('mouseleave', function(e) {
-      mouse_in_canvas = false;
-    });
-  }
-
-  if(typeof signals !== 'undefined')
-  {
-    canvas_jqel.on('mousemove', function(e) {
-      mouse_in_canvas = true;
-
-      const el_boundingRectangle = el.getBoundingClientRect();
-      mouse_x = e.clientX - el_boundingRectangle.left;
-      mouse_y = e.clientY - el_boundingRectangle.top;
-
+    if(typeof signals !== 'undefined')
+    {
       render_signal_box(mouse_x, mouse_y);
-    });
+    }
 
-    canvas_jqel.on('mouseleave', function(e) {
-      mouse_in_canvas = false;
-    });
-    
     if(typeof signal_selected !== 'undefined')
     {
-      canvas_jqel.on('click', function(e) {
-        const el_boundingRectangle = el.getBoundingClientRect();
-        clicked_x = e.clientX - el_boundingRectangle.left;
-        clicked_y = e.clientY - el_boundingRectangle.top;
+      render_signal_selected_box(clicked_x, clicked_y);
 
-        render_signal_selected_box(clicked_x, clicked_y);
-
-        if(signal_selected != null && typeof signal_tune !== 'undefined')
-        {
-          signal_tune(signal_selected.frequency, signal_selected.symbolrate);
-        }        
-      });
+      if(signal_selected != null && typeof signal_tune !== 'undefined')
+      {
+        signal_tune(signal_selected.frequency, signal_selected.symbolrate);
+      }
     }
-  }
+  });
+
+  canvas_jqel.on('mouseleave', function(e)
+  {
+    mouse_in_canvas = false;
+  });
 });
 
 function initCanvas()
