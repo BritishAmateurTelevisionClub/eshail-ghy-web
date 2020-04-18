@@ -127,24 +127,7 @@ $(function() {
       mouse_x = e.clientX - el_boundingRectangle.left;
       mouse_y = e.clientY - el_boundingRectangle.top;
 
-      el.title = "";
-      for(var i = 0; i < freq_info.length; i ++) {
-          xd1 = freq_info[i].x1;
-          xd2 = freq_info[i].x2;
-          yd  = freq_info[i].y;
-          if ((mouse_x > xd1-1) && (mouse_x < xd2+1)
-            &&(mouse_y > yd-5) && (mouse_y < yd+5) ) {
-            el.title = "Downlink: " + (10000.00 + freq_info[i].center_frequency) + 
-                       " MHz\nUplink: " + (1910.50 + freq_info[i].center_frequency) +
-                       " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
-                        (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1/1.5/2 Msps");
-
-            ctx = el.getContext('2d');
-            ctx.fillStyle = 'yellow';  // TODO: Stay lit on redraw. Change to red for occupied channels. Edge channels handling ?  
-            ctx.fillRect(xd1, yd, xd2-xd1, 5);
-            break;
-          }
-      }
+      render_frequency_info(mouse_x, mouse_y);
     });
 
   canvas_jqel.on('mouseleave', function(e) {
@@ -723,10 +706,16 @@ function detect_signals(fft_data)
     ctx.restore();
   }
 
-  if(typeof signals !== 'undefined' && mouse_in_canvas)
+  if(mouse_in_canvas)
   {
-    render_signal_box(mouse_x, mouse_y);
+    render_frequency_info(mouse_x, mouse_y);
+
+    if(typeof signals !== 'undefined')
+    {
+      render_signal_box(mouse_x, mouse_y);
+    }
   }
+
   if(typeof signal_selected !== 'undefined' && signal_selected != null)
   {
     render_signal_selected_box(clicked_x, clicked_y);
@@ -799,6 +788,32 @@ function render_signal_selected_box(mouse_x, mouse_y)
         ctx.restore();
 
         return;
+      }
+    }
+  }
+}
+
+function render_frequency_info(mouse_x, mouse_y)
+{
+  if(mouse_y > (canvasHeight * 7/8))
+  {
+    for(var i = 0; i < freq_info.length; i ++)
+    {
+      xd1 = freq_info[i].x1;
+      xd2 = freq_info[i].x2;
+      yd  = freq_info[i].y;
+      if ((mouse_x > xd1-1) && (mouse_x < xd2+1)
+        &&(mouse_y > yd-5) && (mouse_y < yd+5) )
+      {
+        el.title = "Downlink: " + (10000.00 + freq_info[i].center_frequency) + 
+                   " MHz\nUplink: " + (1910.50 + freq_info[i].center_frequency) +
+                   " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
+                    (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1/1.5/2 Msps");
+
+        ctx = el.getContext('2d');
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(xd1, yd, xd2-xd1, 5);
+        break;
       }
     }
   }
