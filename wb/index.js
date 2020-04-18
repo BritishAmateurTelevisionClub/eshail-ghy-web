@@ -27,9 +27,6 @@ var mouse_y = 0;
 
 var fft_colour = 'green';
 
-var signals = [];
-//var signal_selected = [];
-
 var freq_info = [];
 
 /* Load vars from local storage */
