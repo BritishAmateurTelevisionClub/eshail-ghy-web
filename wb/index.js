@@ -776,6 +776,7 @@ function render_signal_selected_box(mouse_x, mouse_y)
 
 function render_frequency_info(mouse_x, mouse_y)
 {
+  var display_triggered = false;
   if(mouse_y > (canvasHeight * 7/8))
   {
     for(var i = 0; i < freq_info.length; i ++)
@@ -791,12 +792,17 @@ function render_frequency_info(mouse_x, mouse_y)
                    " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
                     (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1/1.5/2 Msps");
 
-        ctx = el.getContext('2d');
+        //ctx = el.getContext('2d');
         ctx.fillStyle = 'yellow';
         ctx.fillRect(xd1, yd, xd2-xd1, 5);
+        display_triggered = true;
         break;
       }
     }
+  }
+  if(!display_triggered)
+  {
+    el.title = "";
   }
 }
 
