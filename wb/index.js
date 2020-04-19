@@ -24,6 +24,8 @@ var canvasHeight;
 var mouse_in_canvas = false;
 var mouse_x = 0;
 var mouse_y = 0;
+var clicked_x = 0;
+var clicked_y = 0;
 
 var fft_colour = 'green';
 
@@ -147,6 +149,23 @@ $(function() {
   canvas_jqel.on('mouseleave', function(e)
   {
     mouse_in_canvas = false;
+  });
+
+  canvas_jqel.on('click', function(e)
+  {
+    const el_boundingRectangle = el.getBoundingClientRect();
+    clicked_x = e.clientX - el_boundingRectangle.left;
+    clicked_y = e.clientY - el_boundingRectangle.top;
+
+    if(typeof signal_selected !== 'undefined')
+    {
+      render_signal_selected_box(clicked_x, clicked_y);
+
+      if(signal_selected != null && typeof signal_tune !== 'undefined')
+      {
+        signal_tune(signal_selected.frequency, signal_selected.symbolrate);
+      } 
+    }       
   });
 });
 
