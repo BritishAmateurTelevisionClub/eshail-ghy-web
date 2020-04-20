@@ -29,6 +29,7 @@ var clicked_y = 0;
 
 var fft_colour = 'green';
 
+var signals = []; // Initializing the array for enabling the use of the signal markers
 var freq_info = [];
 
 /* Load vars from local storage */
@@ -603,7 +604,7 @@ function detect_signals(fft_data)
         signal_bw = align_symbolrate((end_signal - start_signal) * (9.0 / fft_data.length));
         signal_freq = 490.5 + (((mid_signal+1) / fft_data.length) * 9.0);
 
-	if(typeof signals !== 'undefined')
+      	if(typeof signals !== 'undefined')
         {
           signals.push(
             {
@@ -660,6 +661,7 @@ function detect_signals(fft_data)
           }
           else
           {
+            ctx.fillStyle = "red";
             ctx.fillText(
               "[over-power]",
               text_x_position,
@@ -674,7 +676,7 @@ function detect_signals(fft_data)
             ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - ((beacon_strength-(1.0*scale_db))/65536)));
             ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - ((beacon_strength-(1.0*scale_db))/65536)));
             ctx.stroke();
-	    ctx.setLineDash([]);
+	          ctx.setLineDash([]);
             ctx.restore();
           }
         }
@@ -706,6 +708,11 @@ function detect_signals(fft_data)
     ctx.restore();
   }
 
+  if(typeof signals !== 'undefined')
+  {
+      render_channel_status();
+   }
+
   if(mouse_in_canvas)
   {
     render_frequency_info(mouse_x, mouse_y);
@@ -735,22 +742,33 @@ function render_signal_box(mouse_x, mouse_y)
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'white';
         
-	ctx.beginPath();
-        ctx.moveTo(signals[i].start, canvasHeight * (7/8));
-        ctx.lineTo(signals[i].start, signals[i].top);
-        ctx.stroke();
-        
-	ctx.beginPath();
-        ctx.moveTo(signals[i].start, signals[i].top);
-        ctx.lineTo(signals[i].end, signals[i].top);
-        ctx.stroke();
-        
-	ctx.beginPath();
-        ctx.moveTo(signals[i].end, canvasHeight * (7/8));
-        ctx.lineTo(signals[i].end, signals[i].top);
-        ctx.stroke();
-        
-	ctx.restore();
+      	ctx.beginPath();
+              ctx.moveTo(signals[i].start, canvasHeight * (7/8));
+              ctx.lineTo(signals[i].start, signals[i].top);
+              ctx.stroke();
+              
+      	ctx.beginPath();
+              ctx.moveTo(signals[i].start, signals[i].top);
+              ctx.lineTo(signals[i].end, signals[i].top);
+              ctx.stroke();
+              
+      	ctx.beginPath();
+              ctx.moveTo(signals[i].end, canvasHeight * (7/8));
+              ctx.lineTo(signals[i].end, signals[i].top);
+              ctx.stroke();
+
+        //Font size big for low bw signals. Better placement as S-meter on top of graph ? 
+        ctx.font = (signals[i].symbolrate < 500 ? "10px" : "14px") + " Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+
+        // dB scale is calibrated ? 
+        ctx.fillText((((canvasHeight *  7/8) - signals[i].top) / ((((canvasHeight * 7/8) - 
+                          (canvasHeight / 12))) / 15)).toFixed(1) + " dB",  
+                          signals[i].start - ((signals[i].start - signals[i].end)/2),  
+                          (canvasHeight * 7/8) - (11*((canvasHeight * 7/8) - signals[i].top)/12));      
+              
+      	ctx.restore();
 
         return;
       }
@@ -811,9 +829,25 @@ function render_frequency_info(mouse_x, mouse_y)
                    " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
                     (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1/1.5/2 Msps");
 
-        //ctx = el.getContext('2d');
         ctx.fillStyle = 'yellow';
         ctx.fillRect(xd1, yd, xd2-xd1, 5);
+
+        ctx.strokeStyle = 'grey';
+
+        ctx.beginPath();
+          ctx.moveTo(xd1, canvasHeight*(7/8));
+          ctx.lineTo(xd1, 0);
+          ctx.stroke();
+
+        ctx.beginPath();
+          ctx.moveTo(xd2, canvasHeight*(7/8));
+          ctx.lineTo(xd2, 0);
+          ctx.stroke();
+
+        // Channel Slots. Could be useful for referencing in chats. Sequential numbering or like W1, N1, VN1 ? 
+        ctx.font = "9px Arial";
+        ctx.fillText(i+1, xd2 - ((xd2-xd1)/2), (canvasHeight * 7/8 ) - 2);   
+
         display_triggered = true;
         break;
       }
@@ -823,6 +857,25 @@ function render_frequency_info(mouse_x, mouse_y)
   {
     el.title = "";
   }
+}
+
+function render_channel_status()
+{
+      for(var i = 0; i < signals.length; i++)
+          {
+            for(var j = 0; j < freq_info.length; j++)
+            {
+                  // Band edge +- 4 chosen as bounds. Needs to be validated.  
+
+                  if((signals[i].start >= (freq_info[j].x1 - 4) && signals[i].start <= (freq_info[j].x2 + 4)) ||
+                     (signals[i].start <= (freq_info[j].x1) && signals[i].end >= (freq_info[j].x2)) ||
+                     (signals[i].end >= (freq_info[j].x1 - 4) && signals[i].end <= (freq_info[j].x2 + 4)))
+                  {
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(freq_info[j].x1, freq_info[j].y, freq_info[j].x2 - freq_info[j].x1, 5);
+                  }
+            }
+          }
 }
 
 function fft_fullscreen()
