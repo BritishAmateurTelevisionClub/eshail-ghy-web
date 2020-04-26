@@ -780,7 +780,8 @@ function render_signal_box(mouse_x, mouse_y)
         ctx.lineTo(signals[i].end, signals[i].top);
         ctx.stroke();
 
-        if (beacon_strength > 0)
+        /* As long as we have a beacon, and for signals other than the beacon, display relative power on mouseover */
+        if((beacon_strength > 0) && (signals[i].start > canvasWidth / 8))
         {
             ctx.font = (signals[i].symbolrate < 500 ? "11px" : "12px") + " Arial";
             ctx.fillStyle = "yellow";
