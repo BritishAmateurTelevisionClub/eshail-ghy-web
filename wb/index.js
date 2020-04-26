@@ -367,6 +367,32 @@ function updateFFT(data)
   }
 }
 
+function draw_decoded()
+{
+  var i;
+
+  for(i = 0; i < signals_decoded.length; i++)
+  {
+    text_x_position = (signals_decoded[i].frequency - 10490.5) * (canvasWidth / 9.0);
+
+    /* Adjust for right-side overlap */
+    if(text_x_position > (0.97 * canvasWidth))
+    {
+      text_x_position = canvasWidth - 55;
+    }
+
+    ctx.font = "bold 14px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      signals_decoded[i].name,
+        text_x_position,
+        canvasHeight*(6.5/8)
+      );
+  }
+  ctx.restore();
+}
+
 function render_fft()
 {
   if(!render_busy)
@@ -378,6 +404,11 @@ function render_fft()
       var data_frame = render_buffer.shift();
       updateFFT(data_frame);
       detect_signals(data_frame);
+
+      if(typeof signals_decoded !== 'undefined')
+      {
+        draw_decoded();
+      }
 
       /* If we're buffering up, remove old queued frames (unsure about this) */
       if(render_buffer.length > 2)
