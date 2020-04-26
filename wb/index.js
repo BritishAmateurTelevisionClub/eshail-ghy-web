@@ -629,7 +629,7 @@ function detect_signals(fft_data)
         signal_bw = align_symbolrate((end_signal - start_signal) * (9.0 / fft_data.length));
         signal_freq = 490.5 + (((mid_signal+1) / fft_data.length) * 9.0);
 
-	if(typeof signals !== 'undefined')
+        if(typeof signals !== 'undefined')
         {
           signals.push(
             {
@@ -667,7 +667,7 @@ function detect_signals(fft_data)
           text_x_position = (mid_signal/fft_data.length)*canvasWidth;
 
           /* Adjust for right-side overlap */
-          if(text_x_position > (0.95 * canvasWidth))
+          if(text_x_position > (0.92 * canvasWidth))
           {
             text_x_position = canvasWidth - 55;
           }
@@ -784,15 +784,15 @@ function render_signal_box(mouse_x, mouse_y)
   }
 }
 
-function render_signal_selected_box(mouse_x, mouse_y)
+function render_signal_selected_box(mouse_clicked_x, mouse_clicked_y)
 {
   if(mouse_y < (canvasHeight * 7/8))
   {
     for(i=0; i<signals.length; i++)
     {
-      if(mouse_x > signals[i].start
-        && mouse_x < signals[i].end
-        && mouse_y > signals[i].top)
+      if(mouse_clicked_x > signals[i].start
+        && mouse_clicked_x < signals[i].end
+        && mouse_clicked_y > signals[i].top)
       {
         signal_selected = signals[i];
 
@@ -835,7 +835,7 @@ function render_frequency_info(mouse_x, mouse_y)
         el.title = "Downlink: " + (10000.00 + freq_info[i].center_frequency) + 
                    " MHz\nUplink: " + (1910.50 + freq_info[i].center_frequency) +
                    " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
-                    (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1/1.5/2 Msps");
+                    (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1 Msps");
 
         //ctx = el.getContext('2d');
         ctx.fillStyle = 'yellow';
