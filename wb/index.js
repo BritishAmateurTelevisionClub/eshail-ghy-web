@@ -138,11 +138,6 @@ $(function() {
     if(typeof signal_selected !== 'undefined')
     {
       render_signal_selected_box(clicked_x, clicked_y);
-
-      if(signal_selected != null && typeof signal_tune !== 'undefined')
-      {
-        signal_tune(signal_selected.frequency, signal_selected.symbolrate);
-      }
     }
   });
 
