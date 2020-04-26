@@ -27,8 +27,11 @@ var mouse_y = 0;
 var clicked_x = 0;
 var clicked_y = 0;
 
+var beacon_strength = 0;
+
 var fft_colour = 'green';
 
+var signals = []; 
 var freq_info = [];
 
 /* Load vars from local storage */
@@ -539,7 +542,8 @@ function detect_signals(fft_data)
   var acc;
   var acc_i;
 
-  var beacon_strength = 0;
+  var db_per_pixel;
+  var beacon_strength_pixel;
 
   var text_x_position;
 
@@ -700,7 +704,7 @@ function detect_signals(fft_data)
             ctx.moveTo((start_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - ((beacon_strength-(1.0*scale_db))/65536)));
             ctx.lineTo((end_signal/fft_data.length)*canvasWidth, canvasHeight * (1 - ((beacon_strength-(1.0*scale_db))/65536)));
             ctx.stroke();
-	    ctx.setLineDash([]);
+	          ctx.setLineDash([]);
             ctx.restore();
           }
         }
@@ -761,22 +765,37 @@ function render_signal_box(mouse_x, mouse_y)
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'white';
         
-	ctx.beginPath();
+	      ctx.beginPath();
         ctx.moveTo(signals[i].start, canvasHeight * (7/8));
         ctx.lineTo(signals[i].start, signals[i].top);
         ctx.stroke();
         
-	ctx.beginPath();
+	      ctx.beginPath();
         ctx.moveTo(signals[i].start, signals[i].top);
         ctx.lineTo(signals[i].end, signals[i].top);
         ctx.stroke();
         
-	ctx.beginPath();
+	      ctx.beginPath();
         ctx.moveTo(signals[i].end, canvasHeight * (7/8));
         ctx.lineTo(signals[i].end, signals[i].top);
         ctx.stroke();
+
+        if (beacon_strength > 0)
+        {
+            ctx.font = (signals[i].symbolrate < 500 ? "11px" : "12px") + " Arial";
+            ctx.fillStyle = "yellow";
+            ctx.textAlign = "center";
+
+            db_per_pixel = ((canvasHeight * 7/8) - (canvasHeight / 12)) / 15; // 15dB screen window
+            beacon_strength_pixel  = canvasHeight - ((beacon_strength / 65536 ) * canvasHeight);
+
+            ctx.fillText(((beacon_strength_pixel- signals[i].top) / db_per_pixel).toFixed(1) + " dBb",  
+                              signals[i].start - ((signals[i].start - signals[i].end)/2),  
+                              (canvasHeight * 7/8) - (7*((canvasHeight * 7/8) - signals[i].top)/8));      
         
-	ctx.restore();
+        }  
+        
+	      ctx.restore();
 
         return;
       }
@@ -837,7 +856,6 @@ function render_frequency_info(mouse_x, mouse_y)
                    " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
                     (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1 Msps");
 
-        //ctx = el.getContext('2d');
         ctx.fillStyle = 'yellow';
         ctx.fillRect(xd1, yd, xd2-xd1, 5);
         display_triggered = true;
