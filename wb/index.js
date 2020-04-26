@@ -133,10 +133,7 @@ $(function() {
 
     render_frequency_info(mouse_x, mouse_y);
 
-    if(typeof signals !== 'undefined')
-    {
-      render_signal_box(mouse_x, mouse_y);
-    }
+    render_signal_box(mouse_x, mouse_y);
 
     if(typeof signal_selected !== 'undefined')
     {
@@ -547,11 +544,8 @@ function detect_signals(fft_data)
 
   var text_x_position;
 
-  if(typeof signals !== 'undefined')
-  {
-    /* Clear signals array */
-    signals = [];
-  }
+  /* Clear signals array */
+  signals = [];
 
   for(i=2;i<fft_data.length;i++)
   {
@@ -633,18 +627,15 @@ function detect_signals(fft_data)
         signal_bw = align_symbolrate((end_signal - start_signal) * (9.0 / fft_data.length));
         signal_freq = 490.5 + (((mid_signal+1) / fft_data.length) * 9.0);
 
-        if(typeof signals !== 'undefined')
-        {
-          signals.push(
-            {
-              "start": (start_signal/fft_data.length)*canvasWidth,
-              "end": (end_signal/fft_data.length)*canvasWidth,
-              "top": canvasHeight-((strength_signal/65536) * canvasHeight),
-              "frequency": 10000 + signal_freq,
-              "symbolrate": 1000.0 * signal_bw
-            }
-          );
-        }
+        signals.push(
+          {
+            "start": (start_signal/fft_data.length)*canvasWidth,
+            "end": (end_signal/fft_data.length)*canvasWidth,
+            "top": canvasHeight-((strength_signal/65536) * canvasHeight),
+            "frequency": 10000 + signal_freq,
+            "symbolrate": 1000.0 * signal_bw
+          }
+        );
 
         // Exclude signals in beacon band
         if(signal_freq < 492.0)
@@ -740,10 +731,7 @@ function detect_signals(fft_data)
   {
     render_frequency_info(mouse_x, mouse_y);
 
-    if(typeof signals !== 'undefined')
-    {
-      render_signal_box(mouse_x, mouse_y);
-    }
+    render_signal_box(mouse_x, mouse_y);
   }
 
   if(typeof signal_selected !== 'undefined' && signal_selected != null)
