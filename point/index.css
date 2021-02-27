@@ -62,3 +62,9 @@ body {
 .custom-map-control-button:hover {
   background: #ebebeb;
 }
+#li-sep {
+  margin-top: 7px;
+}
+.sep-conjunction {
+  color: #fc4e03;
+}

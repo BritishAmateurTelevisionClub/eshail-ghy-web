@@ -35,6 +35,8 @@ var span_point_sk;
 var span_page_status;
 var span_point_az;
 var span_point_el;
+var span_point_sep;
+var span_point_sep_iswarning = false;
 
 var span_gs_lat;
 var span_gs_lng;
@@ -219,6 +221,42 @@ function updatePointing()
     el_occluded = true;
   }
 
+  var sun = orbits.util.calculatePositionOfSun(null);
+  console.log("Sun Lat: "+(sun[0])+", Sun Lon: "+(sun[1]));
+  const sun_azimuth = relativeAzimuth(
+    [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
+    sun, 148.18e9
+  );
+  const sun_elevation = relativeElevation(
+    [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
+    sun, 148.18e9
+  );
+  console.log("Sun Az: "+(sun_azimuth)+", Sun El: "+(sun_elevation));
+
+  const sat_sun_relative = relativeAngular(point_azimuth, point_elevation, sun_azimuth, sun_elevation);
+  console.log("Sat <-> Sun angle: "+(sat_sun_relative));
+
+  if(sat_sun_relative >= 2.0)
+  {
+    span_point_sep.text(Math.round(sat_sun_relative)+"°");
+
+    if(span_point_sep_iswarning)
+    {
+      span_point_sep.removeClass("sep-conjunction");
+      span_point_sep_iswarning = false;
+    }
+  }
+  else if(sat_sun_relative < 2.0)
+  {
+    span_point_sep.text((Math.round(sat_sun_relative*10.0)/10.0)+"°");
+
+    if(!span_point_sep_iswarning)
+    {
+      span_point_sep.addClass("sep-conjunction");
+      span_point_sep_iswarning = true;
+    }
+  }
+
   // Save updated user position to browser storage
   if(storageSupport)
   {
@@ -363,6 +401,7 @@ $(function()
   span_page_status = $("#page-status");
   span_point_az = $("#point-az");
   span_point_el = $("#point-el");
+  span_point_sep = $("#point-sep-angle");
 
   span_gs_lat = $("#gs-lat");
   span_gs_lng = $("#gs-lon");
@@ -448,6 +487,14 @@ $(function()
     });
   }
 });
+
+/* Added occasional update for Sun-Earth-Satellite Angle */
+const update_point_interval = 10*1000;
+function update_point() {
+  updatePointing();
+  setTimeout(update_point, update_point_interval);
+}
+setTimeout(update_point, update_point_interval);
 
 const ping_interval = 10*1000;
 function ping() {
