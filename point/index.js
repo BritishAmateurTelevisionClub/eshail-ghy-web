@@ -10,6 +10,11 @@ var eshail_marker;
 var user_marker;
 var user_marker_position;
 var user_view_line;
+// Satellite footprint circle
+var eshail_footprint;
+var eshail_footprint_radius_meters;
+var eshail_footprint_toggle_btn;
+var eshail_footprint_enabled = true;
 
 var wmm = new WorldMagneticModel();
 var wmmDateObj = new Date();
@@ -86,6 +91,24 @@ function initMap() {
     {
       localStorage.pointType = map.getMapTypeId();
     });
+
+    eshail_footprint_toggle_btn = document.createElement("button");
+    eshail_footprint_toggle_btn.textContent = "Toggle Visibility Circle";
+    eshail_footprint_toggle_btn.classList.add("custom-map-control-button");
+
+    eshail_footprint_toggle_btn.addEventListener("click", () => {
+      if(eshail_footprint_enabled)
+      {
+        eshail_footprint.setMap(null);
+        eshail_footprint_enabled = false;
+      }
+      else
+      {
+        eshail_footprint.setMap(map);
+        eshail_footprint_enabled = true;
+      }
+    });
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(eshail_footprint_toggle_btn);
   }
 
   user_marker = new google.maps.Marker({
@@ -123,6 +146,7 @@ function initMap() {
   {
     updateGroundStation(init_latLng);
     renderSatellite();
+    renderFootprint();
     updatePointing();
   }
   else
@@ -178,6 +202,8 @@ function updatePointing()
   );
   span_point_el.text((Math.round(point_elevation*10)/10).toFixed(1)+"°"
   );
+  console.log("Az: "+(point_azimuth)+", El: "+(point_elevation));
+
   var _lnb_skew = (Math.round(skew(user_marker_position, eshail_position.lng)*10)/10).toFixed(1);
   span_point_sk.text((_lnb_skew < 0 ? "" : "+")+_lnb_skew+"°");
 
@@ -212,7 +238,23 @@ function renderSatellite()
     },
     position: eshail_position,
     map: map
-    });
+  });
+}
+
+function renderFootprint()
+{
+  const earth_radius_meters = 6.378135e6; // Earth radius, m
+  eshail_footprint_radius_meters = earth_radius_meters * Math.acos(earth_radius_meters / (earth_radius_meters + eshail_position.alt));
+
+  eshail_footprint = new google.maps.Circle({
+    center: eshail_position,
+    radius: eshail_footprint_radius_meters,
+    strokeColor: "#0000F0",
+    strokeOpacity: 0.4,
+    strokeWeight: 1,
+    fillOpacity: 0.0,
+    map: map,
+  });
 }
 
 function loadTLE()
@@ -240,13 +282,26 @@ function loadTLE()
           lng: eshail_orbit.orbit.getPosition()[1],
           alt: eshail_orbit.orbit.getAltitude()*1000 // meters
         };
+        
+        var today = new Date();
+        var today_days_since_0 = (today.getFullYear() * 365) + ((today - (new Date(today.getFullYear(), 0, 0)))/(1000*60*60*24));
+        var tle_days_since_0 = (eshail_orbit.tle.epoch_year * 365) + eshail_orbit.tle.epoch_day;
+        console.log("TLE Age: "+(today_days_since_0-tle_days_since_0)+" days.");
 
-        span_page_status.text("Ready (loaded TLE: "+eshail_orbit.tle.epoch_year+"."+Math.floor(eshail_orbit.tle.epoch_day)+")");
+        if(today_days_since_0 - tle_days_since_0 < 7)
+        {
+          span_page_status.text("Ready (loaded TLE: "+eshail_orbit.tle.epoch_year+"."+Math.floor(eshail_orbit.tle.epoch_day)+")");
+        }
+        else
+        {
+          span_page_status.text("WARNING: TLE out of date (loaded TLE: "+eshail_orbit.tle.epoch_year+"."+Math.floor(eshail_orbit.tle.epoch_day)+")");
+        }
 
         if(map_loaded)
         {
           updateGroundStation(init_latLng);
           renderSatellite();
+          renderFootprint();
           updatePointing();
         }
         else
