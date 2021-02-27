@@ -1,5 +1,5 @@
 const ws_url = "wss://eshail.batc.org.uk/wb/fft";
-const ws_name = "fft_fast";
+const ws_name = "fft_f5oeoplutofw";
 var ws_sock = null;
 var ws_reconnect = null;
 
