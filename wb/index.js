@@ -843,7 +843,7 @@ function render_frequency_info(mouse_x, mouse_y)
         el.title = "Downlink: " + (10000.00 + freq_info[i].center_frequency) + 
                    " MHz\nUplink: " + (1910.50 + freq_info[i].center_frequency) +
                    " MHz\nSymbol Rate: " + ((freq_info[i].bandwidth == 0.125) ? "125/66/33 Ksps" :
-                    (freq_info[i].bandwidth == 0.333) ? "500/333/250 Ksps" : "1 Msps");
+                    (freq_info[i].bandwidth == 0.333) ? (freq_info[i].center_frequency < 497.0 ? "500/333/250 Ksps" : "333/250 Ksps" ) : "1 Msps");
 
         ctx.fillStyle = 'yellow';
         ctx.fillRect(xd1, yd, xd2-xd1, 5);
