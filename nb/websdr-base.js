@@ -1330,7 +1330,7 @@ function bodyonload()
       registerTouchEvents("edgelower", touchlower, touchXYloweredge);
    }
 
-   document.getElementById('webchat-frame').src = 'https://webchat.freenode.net/#es\'hail-2';
+   document.getElementById('webchat-frame').src = 'https://web.libera.chat/#es\'hail-2';
 }
 
 function registerTouchEvents(id, touchStart, touchMove) {
