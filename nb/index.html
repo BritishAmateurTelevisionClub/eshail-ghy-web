@@ -149,16 +149,20 @@
         font-weight: bold;
         color: green;
       }
-      .gpsdo-status-unlocked {
+      .gpsdo-pllstatus-unlocked {
         font-weight: bold;
         color: red;
+      }
+      .gpsdo-gpsstatus-unlocked {
+        font-weight: bold;
+        color: darkorange;
       }
     </style>
     <script src="/lib/jquery-3.5.1.min.js"></script>
     <script src="/lib/bootstrap-4.4.1/js/bootstrap.min.js"></script>
     <script src="tmp/bandinfo.js"></script>
     <script src="websdr-base.js?v=7"></script>
-    <script src="gpsdo_status.js?v=3"></script>
+    <script src="gpsdo_status.js?v=4"></script>
   </head>
   <body class="bg-light" onload=bodyonload()>
     <div id="logo-row" class="row">
@@ -210,9 +214,7 @@
         <li><b><a href="AMSAT-QO-100-NB-Transponder-Bandplan-Graph-1140x641.png" target="_blank">QO-100 Narrowband Bandplan</a> & <a href="https://amsat-dl.org/p4-a-nb-transponder-bandplan-and-operating-guidelines/" target="_blank">Operating Guidelines</a></b></li>
       </ul>
       <ul>
-        <li>Frequency Stability: We're seeing occasional (every few hours) loss of lock on the GPSDO causing significant (~2KHz) frequency drifts as it relocks. It appears that our GPS antenna or feed has suffered damage in Storm Bella on 27th December (68mph gusts recorded on the site). We'll repair this as soon as current circumstances allow.
-          <ul><li>Current Status: PLL: <span id="span-pll-locked">---</span>, GPS: <span id="span-gps-locked">---</span>, Count of lock losses: <b><span id="span-gps-loss-count">---</span></b>.</li></ul>
-          </li>
+        <li>GPS Frequency Reference Status: PLL: <span id="span-pll-locked">---</span>, GPS: <span id="span-gps-locked">---</span></li>
       </ul>
     </div>
 

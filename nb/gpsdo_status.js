@@ -25,39 +25,39 @@ function updateGPSDOstatus()
       if(gpsdo_status_age > (10*1000))
       {
         doc_gpsdo_pll_status.text("---");
-        doc_gpsdo_pll_status.removeClass("gpsdo-status-unlocked");
+        doc_gpsdo_pll_status.removeClass("gpsdo-pllstatus-unlocked");
         doc_gpsdo_pll_status.removeClass("gpsdo-status-locked");
       }
       else if(data.pll_locked)
       {
         doc_gpsdo_pll_status.text("Locked");
-        doc_gpsdo_pll_status.removeClass("gpsdo-status-unlocked");
+        doc_gpsdo_pll_status.removeClass("gpsdo-pllstatus-unlocked");
         doc_gpsdo_pll_status.addClass("gpsdo-status-locked");
       }
       else
       {
         doc_gpsdo_pll_status.text("Unlocked");
         doc_gpsdo_pll_status.removeClass("gpsdo-status-locked");
-        doc_gpsdo_pll_status.addClass("gpsdo-status-unlocked");
+        doc_gpsdo_pll_status.addClass("gpsdo-pllstatus-unlocked");
       }
 
       if(gpsdo_status_age > (10*1000))
       {
         doc_gpsdo_gps_status.text("---");
-        doc_gpsdo_gps_status.removeClass("gpsdo-status-unlocked");
+        doc_gpsdo_gps_status.removeClass("gpsdo-gpsstatus-unlocked");
         doc_gpsdo_gps_status.removeClass("gpsdo-status-locked");
       }
       else if(data.gps_locked)
       {
         doc_gpsdo_gps_status.text("Locked");
-        doc_gpsdo_gps_status.removeClass("gpsdo-status-unlocked");
+        doc_gpsdo_gps_status.removeClass("gpsdo-gpsstatus-unlocked");
         doc_gpsdo_gps_status.addClass("gpsdo-status-locked");
       }
       else
       {
         doc_gpsdo_gps_status.text("Unlocked");
         doc_gpsdo_gps_status.removeClass("gpsdo-status-locked");
-        doc_gpsdo_gps_status.addClass("gpsdo-status-unlocked");
+        doc_gpsdo_gps_status.addClass("gpsdo-gpsstatus-unlocked");
       }
 
       if(gpsdo_status_age > (10*1000))
