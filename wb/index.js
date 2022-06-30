@@ -508,7 +508,7 @@ function is_overpower(beacon_strength, signal_strength, signal_bw)
 {
   if(beacon_strength != 0)
   {
-    if(signal_bw < 0.7) // < 1MS
+    if(signal_bw < 0.4) // < 1MS
     {
       return false;
     }
