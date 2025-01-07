@@ -204,7 +204,7 @@ function updatePointing()
   );
   span_point_el.text((Math.round(point_elevation*10)/10).toFixed(1)+"°"
   );
-  console.log("Az: "+(point_azimuth)+", El: "+(point_elevation));
+  //console.log("Az: "+(point_azimuth)+", El: "+(point_elevation));
 
   var _lnb_skew = (Math.round(skew(user_marker_position, eshail_position.lng)*10)/10).toFixed(1);
   span_point_sk.text((_lnb_skew < 0 ? "" : "+")+_lnb_skew+"°");
@@ -222,7 +222,7 @@ function updatePointing()
   }
 
   var sun = orbits.util.calculatePositionOfSun(null);
-  console.log("Sun Lat: "+(sun[0])+", Sun Lon: "+(sun[1]));
+  //console.log("Sun Lat: "+(sun[0])+", Sun Lon: "+(sun[1]));
   const sun_azimuth = relativeAzimuth(
     [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
     sun, 148.18e9
@@ -231,10 +231,10 @@ function updatePointing()
     [user_marker_position.lat, user_marker_position.lng], user_marker_position.alt,
     sun, 148.18e9
   );
-  console.log("Sun Az: "+(sun_azimuth)+", Sun El: "+(sun_elevation));
+  //console.log("Sun Az: "+(sun_azimuth)+", Sun El: "+(sun_elevation));
 
   const sat_sun_relative = relativeAngular(point_azimuth, point_elevation, sun_azimuth, sun_elevation);
-  console.log("Sat <-> Sun angle: "+(sat_sun_relative));
+  //console.log("Sat <-> Sun angle: "+(sat_sun_relative));
 
   if(sat_sun_relative >= 2.0)
   {
